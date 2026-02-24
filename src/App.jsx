@@ -9,7 +9,7 @@ function HomePage({ musicians, requests, goToMusician, goToRequest }) {
   return (
     <section className="card stack left">
       <h1>Jala</h1>
-      <p className="muted">Helping Baha’i communities connect with musicians for Feast.</p>
+      <p className="muted">A warm space for musicians of all kinds to connect with friends nearby and share music at Feast.</p>
 
       <div className="hero-actions">
         <button className="cta" onClick={goToMusician}>I’m a Musician</button>
@@ -34,13 +34,13 @@ function HomePage({ musicians, requests, goToMusician, goToRequest }) {
       <div className="how-it-works">
         <h3>How it works</h3>
         <ol>
-          <li>Musicians submit a quick sign-up.</li>
-          <li>Feast committees post a request.</li>
-          <li>Coordinator matches and confirms.</li>
+          <li>Musicians of any style add a quick profile.</li>
+          <li>A Feast committee member shares what their community needs.</li>
+          <li>Jala helps connect nearby friends to make it happen.</li>
         </ol>
       </div>
 
-      <p className="muted small">MVP preview only — service wiring comes next.</p>
+      <p className="muted small">MVP preview — built to feel simple, welcoming, and community-first.</p>
     </section>
   )
 }
@@ -60,7 +60,7 @@ function MusicianSignupPage({ onAdd }) {
   return (
     <section className="card left">
       <h2>Musician Sign-up</h2>
-      <p className="muted small">Takes under 30 seconds.</p>
+      <p className="muted small">All musicians are welcome — voice, instruments, beginner to experienced.</p>
       <form className="form stack" onSubmit={submit}>
         <input placeholder="Full name" value={form.name} onChange={(e) => update('name', e.target.value)} />
         <input placeholder="Home community" value={form.community} onChange={(e) => update('community', e.target.value)} />
@@ -70,7 +70,7 @@ function MusicianSignupPage({ onAdd }) {
           <input type="checkbox" checked={form.available} onChange={(e) => update('available', e.target.checked)} />
           Available for upcoming Feasts
         </label>
-        <button type="submit">Join musician list</button>
+        <button type="submit">Join the Jala musician circle</button>
       </form>
     </section>
   )
@@ -90,13 +90,13 @@ function FeastRequestPage({ onAdd }) {
   return (
     <section className="card left">
       <h2>Feast Request</h2>
-      <p className="muted small">Share your needs and we’ll find a musician.</p>
+      <p className="muted small">Tell us what your Feast gathering needs and we’ll help connect you with nearby friends.</p>
       <form className="form stack" onSubmit={submit}>
         <input placeholder="Community name" value={form.community} onChange={(e) => update('community', e.target.value)} />
         <input type="date" value={form.date} onChange={(e) => update('date', e.target.value)} />
         <input placeholder="What music is needed?" value={form.needs} onChange={(e) => update('needs', e.target.value)} />
         <textarea placeholder="Notes (optional)" value={form.notes} onChange={(e) => update('notes', e.target.value)} />
-        <button type="submit">Post request</button>
+        <button type="submit">Share Feast request</button>
       </form>
     </section>
   )
@@ -107,7 +107,7 @@ function RequestBoard({ requests, musicians }) {
 
   return (
     <section className="card left">
-      <h2>Open Requests</h2>
+      <h2>Community Requests</h2>
       {!requests.length ? (
         <p className="muted">No requests yet.</p>
       ) : (
