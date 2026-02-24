@@ -1,15 +1,21 @@
 import { useMemo, useState } from 'react'
 import './App.css'
 
-const TABS = ['Home', 'Musicians', 'Requests']
+const TABS = ['Home', 'Musician Sign Up', 'Feast Request']
 
-function HomePage({ musicians, requests }) {
+function HomePage({ musicians, requests, goToMusician, goToRequest }) {
   const activeMusicians = musicians.filter((m) => m.available).length
 
   return (
     <section className="card stack left">
       <h1>Jala</h1>
       <p className="muted">Helping Baha’i communities connect with musicians for Feast.</p>
+
+      <div className="hero-actions">
+        <button className="cta" onClick={goToMusician}>I’m a Musician</button>
+        <button className="cta secondary" onClick={goToRequest}>Request a Musician</button>
+      </div>
+
       <div className="stats-grid">
         <div className="stat">
           <span className="stat-label">Musicians signed up</span>
@@ -24,7 +30,17 @@ function HomePage({ musicians, requests }) {
           <strong>{requests.length}</strong>
         </div>
       </div>
-      <p className="muted small">Prototype flow for signup + request matching. Backend can be added next.</p>
+
+      <div className="how-it-works">
+        <h3>How it works</h3>
+        <ol>
+          <li>Musicians submit a quick sign-up.</li>
+          <li>Feast committees post a request.</li>
+          <li>Coordinator matches and confirms.</li>
+        </ol>
+      </div>
+
+      <p className="muted small">MVP preview only — service wiring comes next.</p>
     </section>
   )
 }
@@ -43,7 +59,8 @@ function MusicianSignupPage({ onAdd }) {
 
   return (
     <section className="card left">
-      <h2>Musician Signup</h2>
+      <h2>Musician Sign-up</h2>
+      <p className="muted small">Takes under 30 seconds.</p>
       <form className="form stack" onSubmit={submit}>
         <input placeholder="Full name" value={form.name} onChange={(e) => update('name', e.target.value)} />
         <input placeholder="Home community" value={form.community} onChange={(e) => update('community', e.target.value)} />
@@ -73,6 +90,7 @@ function FeastRequestPage({ onAdd }) {
   return (
     <section className="card left">
       <h2>Feast Request</h2>
+      <p className="muted small">Share your needs and we’ll find a musician.</p>
       <form className="form stack" onSubmit={submit}>
         <input placeholder="Community name" value={form.community} onChange={(e) => update('community', e.target.value)} />
         <input type="date" value={form.date} onChange={(e) => update('date', e.target.value)} />
@@ -89,7 +107,7 @@ function RequestBoard({ requests, musicians }) {
 
   return (
     <section className="card left">
-      <h2>Request Board</h2>
+      <h2>Open Requests</h2>
       {!requests.length ? (
         <p className="muted">No requests yet.</p>
       ) : (
@@ -99,7 +117,7 @@ function RequestBoard({ requests, musicians }) {
               <strong>{r.community}</strong> · {r.date}
               <div>{r.needs}</div>
               {r.notes && <small className="muted">{r.notes}</small>}
-              <div className="suggestion">Suggested musicians nearby: {available.slice(0, 3).map((m) => m.name).join(', ') || 'None yet'}</div>
+              <div className="suggestion">Suggested musicians: {available.slice(0, 3).map((m) => m.name).join(', ') || 'None yet'}</div>
             </li>
           ))}
         </ul>
@@ -119,14 +137,16 @@ function App() {
   return (
     <div className="app-shell">
       <main className="page">
-        {tab === 'Home' && <HomePage musicians={musicians} requests={requests} />}
-        {tab === 'Musicians' && (
-          <>
-            <MusicianSignupPage onAdd={addMusician} />
-            <RequestBoard requests={requests} musicians={musicians} />
-          </>
+        {tab === 'Home' && (
+          <HomePage
+            musicians={musicians}
+            requests={requests}
+            goToMusician={() => setTab('Musician Sign Up')}
+            goToRequest={() => setTab('Feast Request')}
+          />
         )}
-        {tab === 'Requests' && (
+        {tab === 'Musician Sign Up' && <MusicianSignupPage onAdd={addMusician} />}
+        {tab === 'Feast Request' && (
           <>
             <FeastRequestPage onAdd={addRequest} />
             <RequestBoard requests={requests} musicians={musicians} />
