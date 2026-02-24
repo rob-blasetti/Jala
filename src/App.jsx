@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import heroImage from './assets/hero-jala.svg'
 import './App.css'
 
 const TABS = ['Home', 'Musician Sign Up', 'Feast Request']
@@ -45,8 +46,15 @@ function HomePage({ musicians, requests, goToMusician, goToRequest }) {
 
   return (
     <>
+      <section className="hero-banner">
+        <img src={heroImage} alt="Friends in community making music together" className="hero-image" />
+        <div className="hero-overlay">
+          <h1>Jala</h1>
+          <p>Connecting musicians and Feast communities through friendship and joyful service.</p>
+        </div>
+      </section>
+
       <section className="card stack left">
-        <h1>Jala</h1>
         <p className="muted">A warm space for musicians of all kinds to connect with friends nearby and share music at Feast.</p>
 
         <div className="hero-actions">

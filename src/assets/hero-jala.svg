@@ -1,0 +1,50 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1600" y2="900" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1D4ED8"/>
+      <stop offset="1" stop-color="#0F172A"/>
+    </linearGradient>
+    <radialGradient id="glow1" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(350 250) rotate(35) scale(450 280)">
+      <stop stop-color="#93C5FD" stop-opacity="0.8"/>
+      <stop offset="1" stop-color="#93C5FD" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1200 650) rotate(10) scale(500 300)">
+      <stop stop-color="#A78BFA" stop-opacity="0.7"/>
+      <stop offset="1" stop-color="#A78BFA" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <ellipse cx="350" cy="250" rx="450" ry="280" fill="url(#glow1)"/>
+  <ellipse cx="1200" cy="650" rx="500" ry="300" fill="url(#glow2)"/>
+
+  <g opacity="0.9" fill="#DBEAFE">
+    <circle cx="220" cy="710" r="84"/>
+    <rect x="168" y="780" width="104" height="120" rx="26"/>
+
+    <circle cx="430" cy="690" r="72"/>
+    <rect x="386" y="750" width="88" height="150" rx="24"/>
+
+    <circle cx="640" cy="730" r="92"/>
+    <rect x="584" y="810" width="112" height="110" rx="26"/>
+
+    <circle cx="900" cy="700" r="78"/>
+    <rect x="852" y="765" width="96" height="140" rx="24"/>
+
+    <circle cx="1120" cy="720" r="88"/>
+    <rect x="1066" y="795" width="108" height="120" rx="24"/>
+  </g>
+
+  <g fill="#FDE68A">
+    <circle cx="1250" cy="220" r="14"/>
+    <rect x="1260" y="120" width="14" height="100" rx="7"/>
+    <circle cx="1310" cy="250" r="14"/>
+    <rect x="1320" y="130" width="14" height="120" rx="7"/>
+
+    <circle cx="980" cy="180" r="10"/>
+    <rect x="988" y="110" width="10" height="70" rx="5"/>
+
+    <circle cx="1180" cy="320" r="11"/>
+    <rect x="1188" y="250" width="11" height="70" rx="5.5"/>
+  </g>
+</svg>
