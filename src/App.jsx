@@ -3,49 +3,90 @@ import './App.css'
 
 const TABS = ['Home', 'Musician Sign Up', 'Feast Request']
 
-function HomePage({ musicians, requests, goToMusician, goToRequest }) {
-  const activeMusicians = musicians.filter((m) => m.available).length
+const SAMPLE_MUSICIANS = [
+  { id: 's1', name: 'Aaliyah', community: 'Northside', instrument: '🎻 Violin', contact: 'aaliyah@example.com', available: true, performances: 12 },
+  { id: 's2', name: 'Sam', community: 'West End', instrument: '🎸 Guitar', contact: 'sam@example.com', available: true, performances: 8 },
+  { id: 's3', name: 'Noah', community: 'Riverdale', instrument: '🥁 Drums', contact: 'noah@example.com', available: false, performances: 5 },
+]
+
+function MusicianCard({ musician }) {
+  const initial = musician.name?.[0]?.toUpperCase() || '🎵'
 
   return (
-    <section className="card stack left">
-      <h1>Jala</h1>
-      <p className="muted">A warm space for musicians of all kinds to connect with friends nearby and share music at Feast.</p>
-
-      <div className="hero-actions">
-        <button className="cta" onClick={goToMusician}>I’m a Musician</button>
-        <button className="cta secondary" onClick={goToRequest}>Request a Musician</button>
-      </div>
-
-      <div className="stats-grid">
-        <div className="stat">
-          <span className="stat-label">Musicians signed up</span>
-          <strong>{musicians.length}</strong>
+    <article className="musician-card">
+      <div className="avatar" aria-hidden="true">{initial}</div>
+      <div>
+        <div className="musician-head">
+          <strong>{musician.name}</strong>
+          <span className="star">⭐ {musician.performances ?? 0}</span>
         </div>
-        <div className="stat">
-          <span className="stat-label">Available now</span>
-          <strong>{activeMusicians}</strong>
-        </div>
-        <div className="stat">
-          <span className="stat-label">Open requests</span>
-          <strong>{requests.length}</strong>
-        </div>
+        <div className="muted">{musician.instrument} · {musician.community}</div>
       </div>
+    </article>
+  )
+}
 
-      <div className="how-it-works">
-        <h3>How it works</h3>
-        <ol>
-          <li>Musicians of any style add a quick profile.</li>
-          <li>A Feast committee member shares what their community needs.</li>
-          <li>Jala helps connect nearby friends to make it happen.</li>
-        </ol>
+function MusicianSpotlight({ musicians }) {
+  return (
+    <section className="card left stack">
+      <h3>Musicians in the community</h3>
+      <p className="muted small">Examples of who’s signing up: 🎻 🎸 🥁 🎹 🎤</p>
+      <div className="stack">
+        {musicians.slice(0, 4).map((m) => (
+          <MusicianCard key={m.id} musician={m} />
+        ))}
       </div>
-
-      <p className="muted small">MVP preview — built to feel simple, welcoming, and community-first.</p>
     </section>
   )
 }
 
-function MusicianSignupPage({ onAdd }) {
+function HomePage({ musicians, requests, goToMusician, goToRequest }) {
+  const activeMusicians = musicians.filter((m) => m.available).length
+
+  return (
+    <>
+      <section className="card stack left">
+        <h1>Jala</h1>
+        <p className="muted">A warm space for musicians of all kinds to connect with friends nearby and share music at Feast.</p>
+
+        <div className="hero-actions">
+          <button className="cta" onClick={goToMusician}>I’m a Musician</button>
+          <button className="cta secondary" onClick={goToRequest}>Request a Musician</button>
+        </div>
+
+        <div className="stats-grid">
+          <div className="stat">
+            <span className="stat-label">Musicians signed up</span>
+            <strong>{musicians.length}</strong>
+          </div>
+          <div className="stat">
+            <span className="stat-label">Available now</span>
+            <strong>{activeMusicians}</strong>
+          </div>
+          <div className="stat">
+            <span className="stat-label">Open requests</span>
+            <strong>{requests.length}</strong>
+          </div>
+        </div>
+
+        <div className="how-it-works">
+          <h3>How it works</h3>
+          <ol>
+            <li>Musicians of any style add a quick profile.</li>
+            <li>A Feast committee member shares what their community needs.</li>
+            <li>Jala helps connect nearby friends to make it happen.</li>
+          </ol>
+        </div>
+
+        <p className="muted small">MVP preview — built to feel simple, welcoming, and community-first.</p>
+      </section>
+
+      <MusicianSpotlight musicians={musicians} />
+    </>
+  )
+}
+
+function MusicianSignupPage({ onAdd, musicians }) {
   const [form, setForm] = useState({ name: '', community: '', instrument: '', contact: '', available: true })
 
   const update = (key, value) => setForm((f) => ({ ...f, [key]: value }))
@@ -58,21 +99,25 @@ function MusicianSignupPage({ onAdd }) {
   }
 
   return (
-    <section className="card left">
-      <h2>Musician Sign-up</h2>
-      <p className="muted small">All musicians are welcome — voice, instruments, beginner to experienced.</p>
-      <form className="form stack" onSubmit={submit}>
-        <input placeholder="Full name" value={form.name} onChange={(e) => update('name', e.target.value)} />
-        <input placeholder="Home community" value={form.community} onChange={(e) => update('community', e.target.value)} />
-        <input placeholder="Instrument / voice" value={form.instrument} onChange={(e) => update('instrument', e.target.value)} />
-        <input placeholder="Contact (email or phone)" value={form.contact} onChange={(e) => update('contact', e.target.value)} />
-        <label className="check-row">
-          <input type="checkbox" checked={form.available} onChange={(e) => update('available', e.target.checked)} />
-          Available for upcoming Feasts
-        </label>
-        <button type="submit">Join the Jala musician circle</button>
-      </form>
-    </section>
+    <>
+      <section className="card left">
+        <h2>Musician Sign-up</h2>
+        <p className="muted small">All musicians are welcome — voice, instruments, beginner to experienced.</p>
+        <form className="form stack" onSubmit={submit}>
+          <input placeholder="Full name" value={form.name} onChange={(e) => update('name', e.target.value)} />
+          <input placeholder="Home community" value={form.community} onChange={(e) => update('community', e.target.value)} />
+          <input placeholder="Instrument / voice (e.g. 🎸 Guitar)" value={form.instrument} onChange={(e) => update('instrument', e.target.value)} />
+          <input placeholder="Contact (email or phone)" value={form.contact} onChange={(e) => update('contact', e.target.value)} />
+          <label className="check-row">
+            <input type="checkbox" checked={form.available} onChange={(e) => update('available', e.target.checked)} />
+            Available for upcoming Feasts
+          </label>
+          <button type="submit">Join the Jala musician circle</button>
+        </form>
+      </section>
+
+      <MusicianSpotlight musicians={musicians} />
+    </>
   )
 }
 
@@ -128,10 +173,18 @@ function RequestBoard({ requests, musicians }) {
 
 function App() {
   const [tab, setTab] = useState('Home')
-  const [musicians, setMusicians] = useState([])
+  const [musicians, setMusicians] = useState(SAMPLE_MUSICIANS)
   const [requests, setRequests] = useState([])
 
-  const addMusician = (payload) => setMusicians((prev) => [{ id: crypto.randomUUID(), ...payload }, ...prev])
+  const addMusician = (payload) => {
+    const next = {
+      id: crypto.randomUUID(),
+      performances: 0,
+      ...payload,
+    }
+    setMusicians((prev) => [next, ...prev])
+  }
+
   const addRequest = (payload) => setRequests((prev) => [{ id: crypto.randomUUID(), ...payload }, ...prev])
 
   return (
@@ -145,7 +198,7 @@ function App() {
             goToRequest={() => setTab('Feast Request')}
           />
         )}
-        {tab === 'Musician Sign Up' && <MusicianSignupPage onAdd={addMusician} />}
+        {tab === 'Musician Sign Up' && <MusicianSignupPage onAdd={addMusician} musicians={musicians} />}
         {tab === 'Feast Request' && (
           <>
             <FeastRequestPage onAdd={addRequest} />

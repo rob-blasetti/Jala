@@ -102,6 +102,41 @@ h1, h2 { margin: 0; }
 .list-item { background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 0.7rem; }
 .suggestion { margin-top: 0.4rem; color: #cbd5e1; font-size: 0.85rem; }
 
+.musician-card {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 0.7rem;
+  align-items: center;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 0.65rem;
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  background: #1d4ed8;
+  color: #e0edff;
+}
+
+.musician-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.star {
+  font-size: 0.85rem;
+  color: #fde68a;
+  white-space: nowrap;
+}
+
 .bottom-nav {
   position: fixed;
   left: 0;
