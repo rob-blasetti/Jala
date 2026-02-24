@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { Button, Input, TextArea } from 'liquid-spirit-styleguide/ui-primitives/web'
 import heroImage from './assets/hero-jala.svg'
 import './App.css'
 
@@ -30,7 +31,7 @@ function MusicianCard({ musician }) {
 
   return (
     <article className="musician-card">
-      <div className="avatar" aria-hidden="true">{initial}</div>
+      <div className="avatar-wrap" aria-hidden="true">{initial}</div>
       <div>
         <div className="musician-head">
           <strong>{musician.name}</strong>
@@ -73,8 +74,8 @@ function HomePage({ musicians, requests, goToMusician, goToRequest }) {
         <p className="muted">A warm space for musicians of all kinds to connect with friends nearby and share music at Feast.</p>
 
         <div className="hero-actions">
-          <button className="cta" onClick={goToMusician}>I’m a Musician</button>
-          <button className="cta secondary" onClick={goToRequest}>Request a Musician</button>
+          <Button className="cta" onPress={goToMusician} label="I’m a Musician" />
+          <Button className="cta secondary" secondary onPress={goToRequest} label="Request a Musician" />
         </div>
 
         <div className="stats-grid">
@@ -127,15 +128,15 @@ function MusicianSignupPage({ onAdd, musicians }) {
         <h2>Musician Sign-up</h2>
         <p className="muted small">All musicians are welcome — voice, instruments, beginner to experienced.</p>
         <form className="form stack" onSubmit={submit}>
-          <input placeholder="Full name" value={form.name} onChange={(e) => update('name', e.target.value)} />
-          <input placeholder="Home community" value={form.community} onChange={(e) => update('community', e.target.value)} />
-          <input placeholder="Instrument / voice (e.g. 🎸 Guitar)" value={form.instrument} onChange={(e) => update('instrument', e.target.value)} />
-          <input placeholder="Contact (email or phone)" value={form.contact} onChange={(e) => update('contact', e.target.value)} />
+          <Input label="Full name" value={form.name} onChange={(e) => update('name', e.target.value)} />
+          <Input label="Home community" value={form.community} onChange={(e) => update('community', e.target.value)} />
+          <Input label="Instrument / voice" placeholder="e.g. 🎸 Guitar" value={form.instrument} onChange={(e) => update('instrument', e.target.value)} />
+          <Input label="Contact" placeholder="email or phone" value={form.contact} onChange={(e) => update('contact', e.target.value)} />
           <label className="check-row">
             <input type="checkbox" checked={form.available} onChange={(e) => update('available', e.target.checked)} />
             Available for upcoming Feasts
           </label>
-          <button type="submit">Join the Jala musician circle</button>
+          <Button type="submit" label="Join the Jala musician circle" />
         </form>
       </section>
 
@@ -174,12 +175,12 @@ function FeastRequestPage({ onAdd }) {
       <h2>Feast Request</h2>
       <p className="muted small">Tell us what your Feast gathering needs and we’ll help connect you with nearby friends.</p>
       <form className="form stack" onSubmit={submit}>
-        <input placeholder="Committee name (e.g. Northside Feast Committee)" value={form.committee} onChange={(e) => update('committee', e.target.value)} />
-        <input placeholder="Community name" value={form.community} onChange={(e) => update('community', e.target.value)} />
-        <input type="date" value={form.date} onChange={(e) => update('date', e.target.value)} />
-        <input placeholder="What music is needed?" value={form.needs} onChange={(e) => update('needs', e.target.value)} />
-        <textarea placeholder="Notes (optional)" value={form.notes} onChange={(e) => update('notes', e.target.value)} />
-        <button type="submit">Share Feast request</button>
+        <Input label="Committee name" placeholder="e.g. Northside Feast Committee" value={form.committee} onChange={(e) => update('committee', e.target.value)} />
+        <Input label="Community name" value={form.community} onChange={(e) => update('community', e.target.value)} />
+        <Input label="Date" type="date" value={form.date} onChange={(e) => update('date', e.target.value)} />
+        <Input label="Music needed" value={form.needs} onChange={(e) => update('needs', e.target.value)} />
+        <TextArea label="Notes (optional)" value={form.notes} onChange={(e) => update('notes', e.target.value)} />
+        <Button type="submit" label="Share Feast request" />
       </form>
     </section>
   )
@@ -265,12 +266,12 @@ function CommitteeReviewPage({ requests, musicians, responses, acceptedByRequest
                         <div key={`${request.id}-${musician.id}`} className="response-item">
                           <MusicianCard musician={musician} />
                           <p className="muted small">“{response.message}”</p>
-                          <button
+                          <Button
                             className={`accept-btn ${isAccepted ? 'accepted' : ''}`}
-                            onClick={() => onAccept(request.id, musician.id)}
-                          >
-                            {isAccepted ? '✅ Accepted' : 'Accept Musician'}
-                          </button>
+                            secondary={!isAccepted}
+                            onPress={() => onAccept(request.id, musician.id)}
+                            label={isAccepted ? '✅ Accepted' : 'Accept Musician'}
+                          />
                         </div>
                       )
                     })

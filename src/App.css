@@ -152,15 +152,17 @@ h1, h2 { margin: 0; }
   padding: 0.65rem;
 }
 
-.avatar {
+.avatar-wrap {
   width: 44px;
   height: 44px;
   border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--card-border);
   display: grid;
   place-items: center;
-  font-weight: 700;
   background: linear-gradient(135deg, #ffd5ab, #bcd7ff);
   color: #365076;
+  font-weight: 700;
 }
 
 .musician-head { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
