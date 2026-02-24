@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import heroImage from './assets/hero-jala.svg'
 import './App.css'
 
-const TABS = ['Home', 'Musician Sign Up', 'Feast Request', 'Performance Requests']
+const TABS = ['Home', 'Musician Sign Up', 'Feast Request', 'Performance Requests', 'Committee Review']
 
 const SAMPLE_MUSICIANS = [
   { id: 's1', name: 'Aaliyah', community: 'Northside', instrument: '🎻 Violin', contact: 'aaliyah@example.com', available: true, performances: 12 },
@@ -14,6 +14,16 @@ const SAMPLE_REQUESTS = [
   { id: 'r1', committee: 'Northside Feast Committee', community: 'Northside', date: '2026-03-02', needs: 'Opening prayer + reflective song', notes: '2-3 songs, acoustic preferred' },
   { id: 'r2', committee: 'West End Devotions Team', community: 'West End', date: '2026-03-09', needs: 'Upbeat welcome piece', notes: 'Guitar or keyboard great' },
 ]
+
+const SAMPLE_RESPONSES = {
+  r1: [
+    { musicianId: 's1', message: 'Happy to support this Feast. I can prepare two reflective pieces.' },
+    { musicianId: 's2', message: 'Available and can bring guitar + vocals.' },
+  ],
+  r2: [
+    { musicianId: 's2', message: 'I can do a welcoming upbeat opening song.' },
+  ],
+}
 
 function MusicianCard({ musician }) {
   const initial = musician.name?.[0]?.toUpperCase() || '🎵'
@@ -217,10 +227,76 @@ function MusicianRequestsPage({ requests }) {
   )
 }
 
+function CommitteeReviewPage({ requests, musicians, responses, acceptedByRequest, onAccept }) {
+  const musicianById = useMemo(
+    () => Object.fromEntries(musicians.map((m) => [m.id, m])),
+    [musicians],
+  )
+
+  return (
+    <section className="card left">
+      <h2>Committee Review</h2>
+      <p className="muted small">See which musicians responded and choose who to confirm.</p>
+
+      {!requests.length ? (
+        <p className="muted">No requests available yet.</p>
+      ) : (
+        <div className="stack">
+          {requests.map((request) => {
+            const requestResponses = responses[request.id] || []
+            const acceptedId = acceptedByRequest[request.id]
+            const acceptedMusician = acceptedId ? musicianById[acceptedId] : null
+
+            return (
+              <div key={request.id} className="review-card">
+                <PerformanceRequestCard request={request} />
+
+                <div className="response-list stack">
+                  {requestResponses.length === 0 ? (
+                    <p className="muted small">No musician responses yet.</p>
+                  ) : (
+                    requestResponses.map((response) => {
+                      const musician = musicianById[response.musicianId]
+                      if (!musician) return null
+
+                      const isAccepted = acceptedId === musician.id
+
+                      return (
+                        <div key={`${request.id}-${musician.id}`} className="response-item">
+                          <MusicianCard musician={musician} />
+                          <p className="muted small">“{response.message}”</p>
+                          <button
+                            className={`accept-btn ${isAccepted ? 'accepted' : ''}`}
+                            onClick={() => onAccept(request.id, musician.id)}
+                          >
+                            {isAccepted ? '✅ Accepted' : 'Accept Musician'}
+                          </button>
+                        </div>
+                      )
+                    })
+                  )}
+                </div>
+
+                {acceptedMusician && (
+                  <p className="accepted-note">
+                    Confirmed: <strong>{acceptedMusician.name}</strong> for this request.
+                  </p>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </section>
+  )
+}
+
 function App() {
   const [tab, setTab] = useState('Home')
   const [musicians, setMusicians] = useState(SAMPLE_MUSICIANS)
   const [requests, setRequests] = useState(SAMPLE_REQUESTS)
+  const [responses] = useState(SAMPLE_RESPONSES)
+  const [acceptedByRequest, setAcceptedByRequest] = useState({})
 
   const addMusician = (payload) => {
     const next = {
@@ -232,6 +308,9 @@ function App() {
   }
 
   const addRequest = (payload) => setRequests((prev) => [{ id: crypto.randomUUID(), ...payload }, ...prev])
+  const acceptMusician = (requestId, musicianId) => {
+    setAcceptedByRequest((prev) => ({ ...prev, [requestId]: musicianId }))
+  }
 
   return (
     <div className="app-shell">
@@ -252,6 +331,15 @@ function App() {
           </>
         )}
         {tab === 'Performance Requests' && <MusicianRequestsPage requests={requests} />}
+        {tab === 'Committee Review' && (
+          <CommitteeReviewPage
+            requests={requests}
+            musicians={musicians}
+            responses={responses}
+            acceptedByRequest={acceptedByRequest}
+            onAccept={acceptMusician}
+          />
+        )}
       </main>
 
       <nav className="bottom-nav" aria-label="Primary navigation">

@@ -159,6 +159,49 @@ h1, h2 { margin: 0; }
   color: #e2e8f0;
 }
 
+.review-card {
+  background: #0b1220;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 0.8rem;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.response-list {
+  margin-top: 0.2rem;
+}
+
+.response-item {
+  background: #111827;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 0.6rem;
+}
+
+.accept-btn {
+  margin-top: 0.35rem;
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #3b82f6;
+  background: #1d4ed8;
+  color: #eff6ff;
+  padding: 0.55rem;
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.accept-btn.accepted {
+  background: #14532d;
+  border-color: #22c55e;
+}
+
+.accepted-note {
+  margin: 0;
+  color: #bbf7d0;
+  font-size: 0.9rem;
+}
+
 .musician-card {
   display: grid;
   grid-template-columns: 44px 1fr;
@@ -200,7 +243,7 @@ h1, h2 { margin: 0; }
   right: 0;
   bottom: 0;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 0.5rem;
   padding: 0.75rem max(0.75rem, env(safe-area-inset-right)) calc(0.75rem + env(safe-area-inset-bottom)) max(0.75rem, env(safe-area-inset-left));
   border-top: 1px solid #334155;
