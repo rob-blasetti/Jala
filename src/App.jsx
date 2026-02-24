@@ -10,6 +10,11 @@ const SAMPLE_MUSICIANS = [
   { id: 's3', name: 'Noah', community: 'Riverdale', instrument: '🥁 Drums', contact: 'noah@example.com', available: false, performances: 5 },
 ]
 
+const SAMPLE_REQUESTS = [
+  { id: 'r1', committee: 'Northside Feast Committee', community: 'Northside', date: '2026-03-02', needs: 'Opening prayer + reflective song', notes: '2-3 songs, acoustic preferred' },
+  { id: 'r2', committee: 'West End Devotions Team', community: 'West End', date: '2026-03-09', needs: 'Upbeat welcome piece', notes: 'Guitar or keyboard great' },
+]
+
 function MusicianCard({ musician }) {
   const initial = musician.name?.[0]?.toUpperCase() || '🎵'
 
@@ -129,15 +134,29 @@ function MusicianSignupPage({ onAdd, musicians }) {
   )
 }
 
+function PerformanceRequestCard({ request }) {
+  return (
+    <article className="performance-request-card">
+      <div className="request-head">
+        <strong>🎶 {request.committee || 'Feast Committee'}</strong>
+        <span className="request-date">📅 {request.date}</span>
+      </div>
+      <div className="muted">📍 {request.community}</div>
+      <div className="request-needs">{request.needs}</div>
+      {request.notes && <small className="muted">{request.notes}</small>}
+    </article>
+  )
+}
+
 function FeastRequestPage({ onAdd }) {
-  const [form, setForm] = useState({ community: '', date: '', needs: '', notes: '' })
+  const [form, setForm] = useState({ committee: '', community: '', date: '', needs: '', notes: '' })
   const update = (key, value) => setForm((f) => ({ ...f, [key]: value }))
 
   const submit = (e) => {
     e.preventDefault()
-    if (!form.community || !form.date || !form.needs) return
+    if (!form.committee || !form.community || !form.date || !form.needs) return
     onAdd(form)
-    setForm({ community: '', date: '', needs: '', notes: '' })
+    setForm({ committee: '', community: '', date: '', needs: '', notes: '' })
   }
 
   return (
@@ -145,6 +164,7 @@ function FeastRequestPage({ onAdd }) {
       <h2>Feast Request</h2>
       <p className="muted small">Tell us what your Feast gathering needs and we’ll help connect you with nearby friends.</p>
       <form className="form stack" onSubmit={submit}>
+        <input placeholder="Committee name (e.g. Northside Feast Committee)" value={form.committee} onChange={(e) => update('committee', e.target.value)} />
         <input placeholder="Community name" value={form.community} onChange={(e) => update('community', e.target.value)} />
         <input type="date" value={form.date} onChange={(e) => update('date', e.target.value)} />
         <input placeholder="What music is needed?" value={form.needs} onChange={(e) => update('needs', e.target.value)} />
@@ -167,9 +187,7 @@ function RequestBoard({ requests, musicians }) {
         <ul className="list stack">
           {requests.map((r) => (
             <li key={r.id} className="list-item">
-              <strong>{r.community}</strong> · {r.date}
-              <div>{r.needs}</div>
-              {r.notes && <small className="muted">{r.notes}</small>}
+              <PerformanceRequestCard request={r} />
               <div className="suggestion">Suggested musicians: {available.slice(0, 3).map((m) => m.name).join(', ') || 'None yet'}</div>
             </li>
           ))}
@@ -182,7 +200,7 @@ function RequestBoard({ requests, musicians }) {
 function App() {
   const [tab, setTab] = useState('Home')
   const [musicians, setMusicians] = useState(SAMPLE_MUSICIANS)
-  const [requests, setRequests] = useState([])
+  const [requests, setRequests] = useState(SAMPLE_REQUESTS)
 
   const addMusician = (payload) => {
     const next = {

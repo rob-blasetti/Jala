@@ -137,6 +137,28 @@ h1, h2 { margin: 0; }
 .list-item { background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 0.7rem; }
 .suggestion { margin-top: 0.4rem; color: #cbd5e1; font-size: 0.85rem; }
 
+.performance-request-card {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.request-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.request-date {
+  color: #bfdbfe;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.request-needs {
+  color: #e2e8f0;
+}
+
 .musician-card {
   display: grid;
   grid-template-columns: 44px 1fr;
