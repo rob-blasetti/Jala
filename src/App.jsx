@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import heroImage from './assets/hero-jala.svg'
 import './App.css'
 
-const TABS = ['Home', 'Musician Sign Up', 'Feast Request']
+const TABS = ['Home', 'Musician Sign Up', 'Feast Request', 'Performance Requests']
 
 const SAMPLE_MUSICIANS = [
   { id: 's1', name: 'Aaliyah', community: 'Northside', instrument: '🎻 Violin', contact: 'aaliyah@example.com', available: true, performances: 12 },
@@ -197,6 +197,26 @@ function RequestBoard({ requests, musicians }) {
   )
 }
 
+function MusicianRequestsPage({ requests }) {
+  return (
+    <section className="card left">
+      <h2>Performance Requests</h2>
+      <p className="muted small">Browse requests from committees looking for musicians.</p>
+      {!requests.length ? (
+        <p className="muted">No requests right now. Check back soon.</p>
+      ) : (
+        <ul className="list stack">
+          {requests.map((r) => (
+            <li key={r.id} className="list-item">
+              <PerformanceRequestCard request={r} />
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  )
+}
+
 function App() {
   const [tab, setTab] = useState('Home')
   const [musicians, setMusicians] = useState(SAMPLE_MUSICIANS)
@@ -231,6 +251,7 @@ function App() {
             <RequestBoard requests={requests} musicians={musicians} />
           </>
         )}
+        {tab === 'Performance Requests' && <MusicianRequestsPage requests={requests} />}
       </main>
 
       <nav className="bottom-nav" aria-label="Primary navigation">
