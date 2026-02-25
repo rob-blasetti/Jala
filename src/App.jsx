@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Button, Input, TextArea } from 'liquid-spirit-styleguide/ui-primitives/web'
-import heroImage from './assets/hero-jala.svg'
+import heroImage from './assets/hero-jala.jpg'
 import { api } from './lib/api'
 import './App.css'
 
