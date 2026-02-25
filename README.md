@@ -1,16 +1,39 @@
-# React + Vite
+# Jala
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Jala is a lightweight community app that helps Feast committees connect with local musicians for gatherings.
 
-Currently, two official plugins are available:
+## MVP Scope
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Musician sign-up (name, community, instrument/voice, contact, availability)
+- Feast request intake (committee, date, music needs, notes)
+- Musician-facing request board
+- Committee review and acceptance flow
+- Local persistence via browser storage (so entered data survives refresh)
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React + Vite
+- `liquid-spirit-styleguide` UI primitives
 
-## Expanding the ESLint configuration
+## Run Locally
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+npm install
+npm run dev
+```
+
+## Build
+
+```bash
+npm run build
+npm run preview
+```
+
+## Current MVP Improvements
+
+- Added inline form validation for signup/request forms
+- Added success feedback banners after key actions
+- Added community-aware musician suggestions for requests
+- Added request filtering by community on musician request view
+- Added persisted local state for musicians, requests, and accepted matches
+- Added musician contact visibility in committee review after acceptance

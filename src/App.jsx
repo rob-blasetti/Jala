@@ -1,9 +1,16 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Button, Input, TextArea } from 'liquid-spirit-styleguide/ui-primitives/web'
 import heroImage from './assets/hero-jala.svg'
 import './App.css'
 
 const TABS = ['Home', 'Musician Sign Up', 'Feast Request', 'Performance Requests', 'Committee Review']
+
+const STORAGE_KEYS = {
+  musicians: 'jala.musicians.v1',
+  requests: 'jala.requests.v1',
+  responses: 'jala.responses.v1',
+  acceptedByRequest: 'jala.acceptedByRequest.v1',
+}
 
 const SAMPLE_MUSICIANS = [
   { id: 's1', name: 'Aaliyah', community: 'Northside', instrument: '🎻 Violin', contact: 'aaliyah@example.com', available: true, performances: 12 },
@@ -26,7 +33,20 @@ const SAMPLE_RESPONSES = {
   ],
 }
 
-function MusicianCard({ musician }) {
+const DEFAULT_SUCCESS = 'Saved successfully.'
+
+const parseStorage = (key, fallback) => {
+  try {
+    const raw = localStorage.getItem(key)
+    if (!raw) return fallback
+    const parsed = JSON.parse(raw)
+    return parsed ?? fallback
+  } catch {
+    return fallback
+  }
+}
+
+function MusicianCard({ musician, showContact = false }) {
   const initial = musician.name?.[0]?.toUpperCase() || '🎵'
 
   return (
@@ -38,6 +58,7 @@ function MusicianCard({ musician }) {
           <span className="star">⭐ {musician.performances ?? 0}</span>
         </div>
         <div className="muted">{musician.instrument} · {musician.community}</div>
+        {showContact && <div className="muted small">📬 {musician.contact}</div>}
       </div>
     </article>
   )
@@ -112,14 +133,20 @@ function HomePage({ musicians, requests, goToMusician, goToRequest }) {
 
 function MusicianSignupPage({ onAdd, musicians }) {
   const [form, setForm] = useState({ name: '', community: '', instrument: '', contact: '', available: true })
+  const [error, setError] = useState('')
 
   const update = (key, value) => setForm((f) => ({ ...f, [key]: value }))
 
   const submit = (e) => {
     e.preventDefault()
-    if (!form.name || !form.community || !form.instrument || !form.contact) return
+    if (!form.name || !form.community || !form.instrument || !form.contact) {
+      setError('Please complete all fields before submitting.')
+      return
+    }
+
     onAdd(form)
     setForm({ name: '', community: '', instrument: '', contact: '', available: true })
+    setError('')
   }
 
   return (
@@ -136,6 +163,7 @@ function MusicianSignupPage({ onAdd, musicians }) {
             <input type="checkbox" checked={form.available} onChange={(e) => update('available', e.target.checked)} />
             Available for upcoming Feasts
           </label>
+          {error && <p className="error-note">{error}</p>}
           <Button type="submit" label="Join the Jala musician circle" />
         </form>
       </section>
@@ -161,13 +189,19 @@ function PerformanceRequestCard({ request }) {
 
 function FeastRequestPage({ onAdd }) {
   const [form, setForm] = useState({ committee: '', community: '', date: '', needs: '', notes: '' })
+  const [error, setError] = useState('')
   const update = (key, value) => setForm((f) => ({ ...f, [key]: value }))
 
   const submit = (e) => {
     e.preventDefault()
-    if (!form.committee || !form.community || !form.date || !form.needs) return
+    if (!form.committee || !form.community || !form.date || !form.needs) {
+      setError('Please complete committee, community, date, and music needs.')
+      return
+    }
+
     onAdd(form)
     setForm({ committee: '', community: '', date: '', needs: '', notes: '' })
+    setError('')
   }
 
   return (
@@ -180,6 +214,7 @@ function FeastRequestPage({ onAdd }) {
         <Input label="Date" type="date" value={form.date} onChange={(e) => update('date', e.target.value)} />
         <Input label="Music needed" value={form.needs} onChange={(e) => update('needs', e.target.value)} />
         <TextArea label="Notes (optional)" value={form.notes} onChange={(e) => update('notes', e.target.value)} />
+        {error && <p className="error-note">{error}</p>}
         <Button type="submit" label="Share Feast request" />
       </form>
     </section>
@@ -189,6 +224,12 @@ function FeastRequestPage({ onAdd }) {
 function RequestBoard({ requests, musicians }) {
   const available = useMemo(() => musicians.filter((m) => m.available), [musicians])
 
+  const findSuggestedMusicians = (request) => {
+    const exactCommunity = available.filter((m) => m.community.toLowerCase() === request.community.toLowerCase())
+    if (exactCommunity.length) return exactCommunity.slice(0, 3)
+    return available.slice(0, 3)
+  }
+
   return (
     <section className="card left">
       <h2>Community Requests</h2>
@@ -196,12 +237,17 @@ function RequestBoard({ requests, musicians }) {
         <p className="muted">No requests yet.</p>
       ) : (
         <ul className="list stack">
-          {requests.map((r) => (
-            <li key={r.id} className="list-item">
-              <PerformanceRequestCard request={r} />
-              <div className="suggestion">Suggested musicians: {available.slice(0, 3).map((m) => m.name).join(', ') || 'None yet'}</div>
-            </li>
-          ))}
+          {requests.map((r) => {
+            const suggested = findSuggestedMusicians(r)
+            return (
+              <li key={r.id} className="list-item">
+                <PerformanceRequestCard request={r} />
+                <div className="suggestion">
+                  Suggested musicians: {suggested.map((m) => `${m.name} (${m.community})`).join(', ') || 'None yet'}
+                </div>
+              </li>
+            )
+          })}
         </ul>
       )}
     </section>
@@ -209,15 +255,25 @@ function RequestBoard({ requests, musicians }) {
 }
 
 function MusicianRequestsPage({ requests }) {
+  const [communityFilter, setCommunityFilter] = useState('')
+
+  const filteredRequests = useMemo(() => {
+    if (!communityFilter) return requests
+    return requests.filter((r) => r.community.toLowerCase().includes(communityFilter.toLowerCase()))
+  }, [requests, communityFilter])
+
   return (
     <section className="card left">
       <h2>Performance Requests</h2>
       <p className="muted small">Browse requests from committees looking for musicians.</p>
-      {!requests.length ? (
-        <p className="muted">No requests right now. Check back soon.</p>
+      <div className="filter-row">
+        <Input label="Filter by community" placeholder="e.g. Northside" value={communityFilter} onChange={(e) => setCommunityFilter(e.target.value)} />
+      </div>
+      {!filteredRequests.length ? (
+        <p className="muted">No requests match this filter right now.</p>
       ) : (
         <ul className="list stack">
-          {requests.map((r) => (
+          {filteredRequests.map((r) => (
             <li key={r.id} className="list-item">
               <PerformanceRequestCard request={r} />
             </li>
@@ -264,7 +320,7 @@ function CommitteeReviewPage({ requests, musicians, responses, acceptedByRequest
 
                       return (
                         <div key={`${request.id}-${musician.id}`} className="response-item">
-                          <MusicianCard musician={musician} />
+                          <MusicianCard musician={musician} showContact />
                           <p className="muted small">“{response.message}”</p>
                           <Button
                             className={`accept-btn ${isAccepted ? 'accepted' : ''}`}
@@ -280,7 +336,7 @@ function CommitteeReviewPage({ requests, musicians, responses, acceptedByRequest
 
                 {acceptedMusician && (
                   <p className="accepted-note">
-                    Confirmed: <strong>{acceptedMusician.name}</strong> for this request.
+                    Confirmed: <strong>{acceptedMusician.name}</strong> ({acceptedMusician.contact}) for this request.
                   </p>
                 )}
               </div>
@@ -294,10 +350,31 @@ function CommitteeReviewPage({ requests, musicians, responses, acceptedByRequest
 
 function App() {
   const [tab, setTab] = useState('Home')
-  const [musicians, setMusicians] = useState(SAMPLE_MUSICIANS)
-  const [requests, setRequests] = useState(SAMPLE_REQUESTS)
-  const [responses] = useState(SAMPLE_RESPONSES)
-  const [acceptedByRequest, setAcceptedByRequest] = useState({})
+
+  const [musicians, setMusicians] = useState(() => parseStorage(STORAGE_KEYS.musicians, SAMPLE_MUSICIANS))
+  const [requests, setRequests] = useState(() => parseStorage(STORAGE_KEYS.requests, SAMPLE_REQUESTS))
+  const [responses] = useState(() => parseStorage(STORAGE_KEYS.responses, SAMPLE_RESPONSES))
+  const [acceptedByRequest, setAcceptedByRequest] = useState(() => parseStorage(STORAGE_KEYS.acceptedByRequest, {}))
+
+  const [successNotice, setSuccessNotice] = useState('')
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.musicians, JSON.stringify(musicians))
+  }, [musicians])
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.requests, JSON.stringify(requests))
+  }, [requests])
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.acceptedByRequest, JSON.stringify(acceptedByRequest))
+  }, [acceptedByRequest])
+
+  useEffect(() => {
+    if (!successNotice) return
+    const timer = setTimeout(() => setSuccessNotice(''), 2500)
+    return () => clearTimeout(timer)
+  }, [successNotice])
 
   const addMusician = (payload) => {
     const next = {
@@ -306,16 +383,24 @@ function App() {
       ...payload,
     }
     setMusicians((prev) => [next, ...prev])
+    setSuccessNotice('Musician profile added.')
   }
 
-  const addRequest = (payload) => setRequests((prev) => [{ id: crypto.randomUUID(), ...payload }, ...prev])
+  const addRequest = (payload) => {
+    setRequests((prev) => [{ id: crypto.randomUUID(), ...payload }, ...prev])
+    setSuccessNotice('Feast request submitted.')
+  }
+
   const acceptMusician = (requestId, musicianId) => {
     setAcceptedByRequest((prev) => ({ ...prev, [requestId]: musicianId }))
+    setSuccessNotice('Musician confirmed for request.')
   }
 
   return (
     <div className="app-shell">
       <main className="page">
+        {successNotice && <p className="success-banner">{successNotice || DEFAULT_SUCCESS}</p>}
+
         {tab === 'Home' && (
           <HomePage
             musicians={musicians}
