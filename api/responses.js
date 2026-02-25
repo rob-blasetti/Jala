@@ -1,4 +1,4 @@
-import { appendRow, deleteRow, listRows, patchRow, send, withErrorHandling } from './_sheets.js'
+import { appendRow, deleteRow, listRows, patchRow, send, withErrorHandling } from './_db.js'
 
 export default async function handler(req, res) {
   return withErrorHandling(res, async () => {
