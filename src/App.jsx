@@ -1,16 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Button, Input, TextArea } from 'liquid-spirit-styleguide/ui-primitives/web'
 import heroImage from './assets/hero-jala.svg'
+import { api } from './lib/api'
 import './App.css'
 
 const TABS = ['Home', 'Musician Sign Up', 'Feast Request', 'Performance Requests', 'Committee Review']
-
-const STORAGE_KEYS = {
-  musicians: 'jala.musicians.v1',
-  requests: 'jala.requests.v1',
-  responses: 'jala.responses.v1',
-  acceptedByRequest: 'jala.acceptedByRequest.v1',
-}
 
 const SAMPLE_MUSICIANS = [
   { id: 's1', name: 'Aaliyah', community: 'Northside', instrument: '🎻 Violin', contact: 'aaliyah@example.com', available: true, performances: 12 },
@@ -19,32 +13,15 @@ const SAMPLE_MUSICIANS = [
 ]
 
 const SAMPLE_REQUESTS = [
-  { id: 'r1', committee: 'Northside Feast Committee', community: 'Northside', date: '2026-03-02', needs: 'Opening prayer + reflective song', notes: '2-3 songs, acoustic preferred' },
-  { id: 'r2', committee: 'West End Devotions Team', community: 'West End', date: '2026-03-09', needs: 'Upbeat welcome piece', notes: 'Guitar or keyboard great' },
+  { id: 'r1', committee: 'Northside Feast Committee', community: 'Northside', date: '2026-03-02', needs: 'Opening prayer + reflective song', notes: '2-3 songs, acoustic preferred', status: 'Open' },
+  { id: 'r2', committee: 'West End Devotions Team', community: 'West End', date: '2026-03-09', needs: 'Upbeat welcome piece', notes: 'Guitar or keyboard great', status: 'Open' },
 ]
 
-const SAMPLE_RESPONSES = {
-  r1: [
-    { musicianId: 's1', message: 'Happy to support this Feast. I can prepare two reflective pieces.' },
-    { musicianId: 's2', message: 'Available and can bring guitar + vocals.' },
-  ],
-  r2: [
-    { musicianId: 's2', message: 'I can do a welcoming upbeat opening song.' },
-  ],
-}
-
-const DEFAULT_SUCCESS = 'Saved successfully.'
-
-const parseStorage = (key, fallback) => {
-  try {
-    const raw = localStorage.getItem(key)
-    if (!raw) return fallback
-    const parsed = JSON.parse(raw)
-    return parsed ?? fallback
-  } catch {
-    return fallback
-  }
-}
+const SAMPLE_RESPONSES = [
+  { id: 'rsp1', requestId: 'r1', musicianId: 's1', message: 'Happy to support this Feast. I can prepare two reflective pieces.' },
+  { id: 'rsp2', requestId: 'r1', musicianId: 's2', message: 'Available and can bring guitar + vocals.' },
+  { id: 'rsp3', requestId: 'r2', musicianId: 's2', message: 'I can do a welcoming upbeat opening song.' },
+]
 
 function MusicianCard({ musician, showContact = false }) {
   const initial = musician.name?.[0]?.toUpperCase() || '🎵'
@@ -113,17 +90,6 @@ function HomePage({ musicians, requests, goToMusician, goToRequest }) {
             <strong>{requests.length}</strong>
           </div>
         </div>
-
-        <div className="how-it-works">
-          <h3>How it works</h3>
-          <ol>
-            <li>Musicians of any style add a quick profile.</li>
-            <li>A Feast committee member shares what their community needs.</li>
-            <li>Jala helps connect nearby friends to make it happen.</li>
-          </ol>
-        </div>
-
-        <p className="muted small">MVP preview — built to feel simple, welcoming, and community-first.</p>
       </section>
 
       <MusicianSpotlight musicians={musicians} />
@@ -183,6 +149,7 @@ function PerformanceRequestCard({ request }) {
       <div className="muted">📍 {request.community}</div>
       <div className="request-needs">{request.needs}</div>
       {request.notes && <small className="muted">{request.notes}</small>}
+      <small className="muted">Status: {request.status || 'Open'}</small>
     </article>
   )
 }
@@ -285,10 +252,16 @@ function MusicianRequestsPage({ requests }) {
 }
 
 function CommitteeReviewPage({ requests, musicians, responses, acceptedByRequest, onAccept }) {
-  const musicianById = useMemo(
-    () => Object.fromEntries(musicians.map((m) => [m.id, m])),
-    [musicians],
-  )
+  const musicianById = useMemo(() => Object.fromEntries(musicians.map((m) => [m.id, m])), [musicians])
+
+  const responsesByRequest = useMemo(() => {
+    const grouped = {}
+    for (const response of responses) {
+      grouped[response.requestId] = grouped[response.requestId] || []
+      grouped[response.requestId].push(response)
+    }
+    return grouped
+  }, [responses])
 
   return (
     <section className="card left">
@@ -300,7 +273,7 @@ function CommitteeReviewPage({ requests, musicians, responses, acceptedByRequest
       ) : (
         <div className="stack">
           {requests.map((request) => {
-            const requestResponses = responses[request.id] || []
+            const requestResponses = responsesByRequest[request.id] || []
             const acceptedId = acceptedByRequest[request.id]
             const acceptedMusician = acceptedId ? musicianById[acceptedId] : null
 
@@ -350,56 +323,99 @@ function CommitteeReviewPage({ requests, musicians, responses, acceptedByRequest
 
 function App() {
   const [tab, setTab] = useState('Home')
-
-  const [musicians, setMusicians] = useState(() => parseStorage(STORAGE_KEYS.musicians, SAMPLE_MUSICIANS))
-  const [requests, setRequests] = useState(() => parseStorage(STORAGE_KEYS.requests, SAMPLE_REQUESTS))
-  const [responses] = useState(() => parseStorage(STORAGE_KEYS.responses, SAMPLE_RESPONSES))
-  const [acceptedByRequest, setAcceptedByRequest] = useState(() => parseStorage(STORAGE_KEYS.acceptedByRequest, {}))
+  const [musicians, setMusicians] = useState([])
+  const [requests, setRequests] = useState([])
+  const [responses, setResponses] = useState([])
+  const [acceptedByRequest, setAcceptedByRequest] = useState({})
 
   const [successNotice, setSuccessNotice] = useState('')
+  const [errorNotice, setErrorNotice] = useState('')
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.musicians, JSON.stringify(musicians))
-  }, [musicians])
+    const load = async () => {
+      try {
+        setLoading(true)
+        const [musiciansData, requestsData, responsesData, matchesData] = await Promise.all([
+          api.getMusicians(),
+          api.getRequests(),
+          api.getResponses(),
+          api.getMatches(),
+        ])
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.requests, JSON.stringify(requests))
-  }, [requests])
+        setMusicians(musiciansData.length ? musiciansData : SAMPLE_MUSICIANS)
+        setRequests(requestsData.length ? requestsData : SAMPLE_REQUESTS)
+        setResponses(responsesData.length ? responsesData : SAMPLE_RESPONSES)
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.acceptedByRequest, JSON.stringify(acceptedByRequest))
-  }, [acceptedByRequest])
-
-  useEffect(() => {
-    if (!successNotice) return
-    const timer = setTimeout(() => setSuccessNotice(''), 2500)
-    return () => clearTimeout(timer)
-  }, [successNotice])
-
-  const addMusician = (payload) => {
-    const next = {
-      id: crypto.randomUUID(),
-      performances: 0,
-      ...payload,
+        const nextMatches = {}
+        for (const match of matchesData) nextMatches[match.requestId] = match.musicianId
+        setAcceptedByRequest(nextMatches)
+      } catch (error) {
+        setMusicians(SAMPLE_MUSICIANS)
+        setRequests(SAMPLE_REQUESTS)
+        setResponses(SAMPLE_RESPONSES)
+        setErrorNotice(`Sheet API unavailable. Showing fallback data. ${error.message}`)
+      } finally {
+        setLoading(false)
+      }
     }
-    setMusicians((prev) => [next, ...prev])
-    setSuccessNotice('Musician profile added.')
+
+    load()
+  }, [])
+
+  useEffect(() => {
+    if (!successNotice && !errorNotice) return
+    const timer = setTimeout(() => {
+      setSuccessNotice('')
+      setErrorNotice('')
+    }, 3500)
+    return () => clearTimeout(timer)
+  }, [successNotice, errorNotice])
+
+  const addMusician = async (payload) => {
+    try {
+      const created = await api.createMusician({ ...payload, performances: 0 })
+      setMusicians((prev) => [created, ...prev])
+      setSuccessNotice('Musician profile added.')
+    } catch (error) {
+      setErrorNotice(`Could not save musician: ${error.message}`)
+    }
   }
 
-  const addRequest = (payload) => {
-    setRequests((prev) => [{ id: crypto.randomUUID(), ...payload }, ...prev])
-    setSuccessNotice('Feast request submitted.')
+  const addRequest = async (payload) => {
+    try {
+      const created = await api.createRequest({ ...payload, status: 'Open' })
+      setRequests((prev) => [created, ...prev])
+      setSuccessNotice('Feast request submitted.')
+    } catch (error) {
+      setErrorNotice(`Could not save request: ${error.message}`)
+    }
   }
 
-  const acceptMusician = (requestId, musicianId) => {
-    setAcceptedByRequest((prev) => ({ ...prev, [requestId]: musicianId }))
-    setSuccessNotice('Musician confirmed for request.')
+  const acceptMusician = async (requestId, musicianId) => {
+    try {
+      const existingMatch = Object.entries(acceptedByRequest).find(([rid]) => rid === requestId)
+      if (existingMatch) {
+        await api.patchMatch({ id: requestId, requestId, musicianId })
+      } else {
+        await api.createMatch({ id: requestId, requestId, musicianId })
+      }
+
+      await api.patchRequest({ id: requestId, status: 'Confirmed' })
+      setAcceptedByRequest((prev) => ({ ...prev, [requestId]: musicianId }))
+      setRequests((prev) => prev.map((r) => (r.id === requestId ? { ...r, status: 'Confirmed' } : r)))
+      setSuccessNotice('Musician confirmed for request.')
+    } catch (error) {
+      setErrorNotice(`Could not confirm musician: ${error.message}`)
+    }
   }
 
   return (
     <div className="app-shell">
       <main className="page">
-        {successNotice && <p className="success-banner">{successNotice || DEFAULT_SUCCESS}</p>}
+        {loading && <p className="muted">Loading data…</p>}
+        {successNotice && <p className="success-banner">{successNotice}</p>}
+        {errorNotice && <p className="error-note">{errorNotice}</p>}
 
         {tab === 'Home' && (
           <HomePage
