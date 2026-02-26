@@ -7,6 +7,20 @@ import './App.css'
 const TABS = ['Home', 'Musicians', 'Community']
 const REQUEST_TAB = 'Community Envoy Request'
 
+const tabToPath = (tab) => {
+  if (tab === 'Musicians') return '/browse'
+  if (tab === 'Community') return '/community'
+  if (tab === REQUEST_TAB) return '/request'
+  return '/'
+}
+
+const pathToTab = (path) => {
+  if (path === '/browse') return 'Musicians'
+  if (path === '/community') return 'Community'
+  if (path === '/request') return REQUEST_TAB
+  return 'Home'
+}
+
 const SAMPLE_MUSICIANS = [
   { id: 's1', name: 'Aaliyah', community: 'Northside', instrument: '🎻 Violin', contact: 'aaliyah@example.com', available: true, performances: 12, compensationPreference: 'Open to honorarium' },
   { id: 's2', name: 'Sam', community: 'West End', instrument: '🎸 Guitar', contact: 'sam@example.com', available: true, performances: 8, compensationPreference: 'Voluntary service' },
@@ -465,7 +479,7 @@ function CommitteeReviewPage({ requests, musicians, responses, acceptedByRequest
 }
 
 function App() {
-  const [tab, setTab] = useState('Home')
+  const [tab, setTab] = useState(() => pathToTab(window.location.pathname))
   const [musicians, setMusicians] = useState([])
   const [requests, setRequests] = useState([])
   const [responses, setResponses] = useState([])
@@ -504,6 +518,20 @@ function App() {
     }
 
     load()
+  }, [])
+
+  const navigateToTab = (nextTab) => {
+    setTab(nextTab)
+    const nextPath = tabToPath(nextTab)
+    if (window.location.pathname !== nextPath) {
+      window.history.pushState({}, '', nextPath)
+    }
+  }
+
+  useEffect(() => {
+    const onPopState = () => setTab(pathToTab(window.location.pathname))
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
   }, [])
 
   useEffect(() => {
@@ -622,11 +650,11 @@ function App() {
       <nav className="bottom-nav" aria-label="Primary navigation">
         <div className="brand">Jala</div>
         {TABS.map((item) => (
-          <button key={item} className={tab === item ? 'active' : ''} onClick={() => setTab(item)}>
+          <button key={item} className={tab === item ? 'active' : ''} onClick={() => navigateToTab(item)}>
             {item}
           </button>
         ))}
-        <button className={`request-cta ${tab === REQUEST_TAB ? 'active' : ''}`} onClick={() => setTab(REQUEST_TAB)}>
+        <button className={`request-cta ${tab === REQUEST_TAB ? 'active' : ''}`} onClick={() => navigateToTab(REQUEST_TAB)}>
           Community Envoy Request
         </button>
       </nav>
@@ -640,8 +668,8 @@ function App() {
           <HomePage
             musicians={musicians}
             requests={requests}
-            goToMusician={() => setTab('Musicians')}
-            goToRequest={() => setTab(REQUEST_TAB)}
+            goToMusician={() => navigateToTab('Musicians')}
+            goToRequest={() => navigateToTab(REQUEST_TAB)}
             onRequestMusician={requestMusicianByEmail}
           />
         )}
