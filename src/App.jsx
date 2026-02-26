@@ -188,7 +188,7 @@ function HomePage({ musicians, requests, onOpenMusicianSignup, onOpenExplainer, 
             </div>
           </div>
           <h1 key={heroAnimKey} className={`typing-title ${heroTitleClass}`}>{heroTitle}<span className="typing-cursor" aria-hidden="true">|</span></h1>
-          <p>Connecting musicians and Feast communities through friendship and joyful service.</p>
+          <p>The ocean is calling all musicians and artistes.</p>
           <div className="hero-inline-actions">
             <button className="hero-inline-btn primary" onClick={onOpenMusicianSignup}>Sign up Musician</button>
             <button className="hero-inline-btn" onClick={onOpenExplainer}>Explainer</button>
