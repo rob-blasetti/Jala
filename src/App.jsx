@@ -5,7 +5,7 @@ import { api } from './lib/api'
 import { useMusiciansContext } from './context/MusiciansContext'
 import './App.css'
 
-const TABS = ['Home', 'Musicians', 'Categories', 'Community', 'Admin']
+const TABS = ['Home', 'Musicians', 'Categories', 'Community']
 const REQUEST_TAB = 'Community Envoy Request'
 const EXPLAINER_TAB = 'Explainer'
 
