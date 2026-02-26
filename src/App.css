@@ -461,10 +461,9 @@ h1, h2 { margin: 0; }
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 0.55rem;
   align-items: center;
-  padding-top: 0.78rem;
-  padding-bottom: 0.75rem;
-  padding-left: max(0.95rem, calc((100vw - 1120px) / 2 + 1.4rem));
-  padding-right: max(0.95rem, calc((100vw - 1120px) / 2 + 1.4rem));
+  width: min(1120px, calc(100% - 2.8rem));
+  margin: 0 auto;
+  padding: 0.78rem 0.95rem 0.75rem;
   border-bottom: 1px solid var(--card-border);
   background: rgba(238, 244, 255, 0.95);
   backdrop-filter: blur(6px);
@@ -522,7 +521,11 @@ h1, h2 { margin: 0; }
   .card { padding: 0.9rem; }
   .hero-image { height: 240px; object-position: center; }
   .hero-overlay h1 { font-size: 1.9rem; }
-  .bottom-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bottom-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: calc(100% - 1.9rem);
+    padding: 0.65rem 0.6rem;
+  }
   .bottom-nav .brand-button { grid-column: 1 / -1; padding-left: 0; }
 }
 
