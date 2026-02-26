@@ -229,15 +229,28 @@ function PerformanceRequestCard({ request }) {
 }
 
 function FeastRequestPage({ onAdd }) {
-  const [form, setForm] = useState({ committee: '', community: '', date: '', needs: '', notes: '', amountAud: '150' })
+  const [form, setForm] = useState({
+    contactName: '',
+    contactRole: '',
+    contactEmail: '',
+    contactPhone: '',
+    onBehalfOf: '',
+    community: '',
+    eventType: 'Nineteen Day Feast',
+    date: '',
+    time: '',
+    needs: '',
+    notes: '',
+    amountAud: '150',
+  })
   const [error, setError] = useState('')
   const update = (key, value) => setForm((f) => ({ ...f, [key]: value }))
 
   const submit = (e) => {
     e.preventDefault()
     const amount = Number(form.amountAud)
-    if (!form.committee || !form.community || !form.date || !form.needs) {
-      setError('Please complete committee, community, date, and music needs.')
+    if (!form.contactName || !form.contactEmail || !form.community || !form.date || !form.needs) {
+      setError('Please complete contact, community, date, and music needs.')
       return
     }
     if (Number.isNaN(amount) || amount < 5 || amount > 300) {
@@ -245,25 +258,65 @@ function FeastRequestPage({ onAdd }) {
       return
     }
 
-    onAdd({ ...form, amountAud: amount })
-    setForm({ committee: '', community: '', date: '', needs: '', notes: '', amountAud: '150' })
+    const committee = form.onBehalfOf || `${form.contactName}${form.contactRole ? ` (${form.contactRole})` : ''}`
+    const detailNotes = [
+      `Community Contact: ${form.contactName}`,
+      form.contactRole ? `Role: ${form.contactRole}` : null,
+      `Email: ${form.contactEmail}`,
+      form.contactPhone ? `Phone: ${form.contactPhone}` : null,
+      `Event: ${form.eventType}`,
+      form.time ? `Time: ${form.time}` : null,
+      form.notes ? `Extra Notes: ${form.notes}` : null,
+    ]
+      .filter(Boolean)
+      .join('\n')
+
+    onAdd({
+      committee,
+      community: form.community,
+      date: form.date,
+      needs: `${form.eventType}: ${form.needs}`,
+      notes: detailNotes,
+      amountAud: amount,
+    })
+
+    setForm({
+      contactName: '',
+      contactRole: '',
+      contactEmail: '',
+      contactPhone: '',
+      onBehalfOf: '',
+      community: '',
+      eventType: 'Nineteen Day Feast',
+      date: '',
+      time: '',
+      needs: '',
+      notes: '',
+      amountAud: '150',
+    })
     setError('')
   }
 
   return (
     <section className="card left">
-      <h2>Feast Request</h2>
-      <p className="muted small">Tell us what your Feast gathering needs and we’ll help connect you with nearby friends.</p>
+      <h2>Community Contact Request</h2>
+      <p className="muted small">An individual signs up on behalf of the community and becomes the point of contact for this request.</p>
       <form className="form stack" onSubmit={submit}>
-        <Input label="Committee name" placeholder="e.g. Northside Feast Committee" value={form.committee} onChange={(e) => update('committee', e.target.value)} />
+        <Input label="Your name" value={form.contactName} onChange={(e) => update('contactName', e.target.value)} />
+        <Input label="Your role (optional)" placeholder="Feast Coordinator, Secretary, etc." value={form.contactRole} onChange={(e) => update('contactRole', e.target.value)} />
+        <Input label="Contact email" type="email" value={form.contactEmail} onChange={(e) => update('contactEmail', e.target.value)} />
+        <Input label="Contact phone (optional)" value={form.contactPhone} onChange={(e) => update('contactPhone', e.target.value)} />
+        <Input label="On behalf of (optional)" placeholder="e.g. Northside Feast Committee" value={form.onBehalfOf} onChange={(e) => update('onBehalfOf', e.target.value)} />
         <Input label="Community name" value={form.community} onChange={(e) => update('community', e.target.value)} />
+        <Input label="Event type" placeholder="Nineteen Day Feast / Holy Day / Devotional" value={form.eventType} onChange={(e) => update('eventType', e.target.value)} />
         <Input label="Date" type="date" value={form.date} onChange={(e) => update('date', e.target.value)} />
+        <Input label="Time (optional)" placeholder="e.g. 7:30 PM" value={form.time} onChange={(e) => update('time', e.target.value)} />
         <Input label="Music needed" value={form.needs} onChange={(e) => update('needs', e.target.value)} />
         <Input label="Musician payment (AUD)" type="number" min="5" max="300" value={form.amountAud} onChange={(e) => update('amountAud', e.target.value)} />
-        <TextArea label="Notes (optional)" value={form.notes} onChange={(e) => update('notes', e.target.value)} />
+        <TextArea label="Additional notes (optional)" value={form.notes} onChange={(e) => update('notes', e.target.value)} />
         <p className="muted small">Includes a standard 10% platform fee at checkout.</p>
         {error && <p className="error-note">{error}</p>}
-        <Button type="submit" label="Share Feast request" />
+        <Button type="submit" label="Continue to payment" />
       </form>
     </section>
   )
