@@ -5,7 +5,7 @@ import { api } from './lib/api'
 import { useMusiciansContext } from './context/MusiciansContext'
 import './App.css'
 
-const TABS = ['Home', 'Musicians', 'Categories', 'Community']
+const TABS = ['Home', 'Musicians', 'Categories', 'Community', 'Admin']
 const REQUEST_TAB = 'Community Envoy Request'
 const EXPLAINER_TAB = 'Explainer'
 
@@ -13,6 +13,7 @@ const tabToPath = (tab) => {
   if (tab === 'Musicians') return '/browse'
   if (tab === 'Categories') return '/categories'
   if (tab === 'Community') return '/community'
+  if (tab === 'Admin') return '/admin'
   if (tab === EXPLAINER_TAB) return '/explainer'
   if (tab === REQUEST_TAB) return '/request'
   return '/'
@@ -22,6 +23,7 @@ const pathToTab = (path) => {
   if (path === '/browse') return 'Musicians'
   if (path === '/categories') return 'Categories'
   if (path === '/community') return 'Community'
+  if (path === '/admin') return 'Admin'
   if (path === '/explainer') return EXPLAINER_TAB
   if (path === '/request') return REQUEST_TAB
   return 'Home'
@@ -356,6 +358,7 @@ function FeastRequestPage({ onAdd }) {
     <section className="card left">
       <h2>Community Contact Request</h2>
       <p className="muted small">An individual signs up on behalf of the community and becomes the point of contact for this request.</p>
+      <p className="muted small"><strong>Step 1:</strong> Contact details · <strong>Step 2:</strong> Event needs · <strong>Step 3:</strong> Payment</p>
       <form className="form stack" onSubmit={submit}>
         <Input label="Your name" value={form.contactName} onChange={(e) => update('contactName', e.target.value)} />
         <Input label="Your role (optional)" placeholder="Feast Coordinator, Secretary, etc." value={form.contactRole} onChange={(e) => update('contactRole', e.target.value)} />
@@ -478,6 +481,39 @@ function ExplainerPage({ onOpenMusicianSignup, goToRequest }) {
       <div className="hero-actions">
         <Button className="cta" onPress={onOpenMusicianSignup} label="Sign up Musician" />
         <Button className="cta secondary" secondary onPress={goToRequest} label="Community Envoy Request" />
+      </div>
+    </section>
+  )
+}
+
+function AdminDashboardPage({ musicians, requests }) {
+  const paid = requests.filter((r) => r.status === 'Paid').length
+  const pending = requests.filter((r) => ['Open', 'Awaiting Payment'].includes(r.status)).length
+  const confirmed = requests.filter((r) => r.status === 'Confirmed').length
+
+  return (
+    <section className="card left stack">
+      <h2>Admin Dashboard</h2>
+      <p className="muted small">Decision-grade view of live activity and request pipeline.</p>
+
+      <div className="stats-grid">
+        <div className="stat"><span className="stat-label">Total musicians</span><strong>{musicians.length}</strong></div>
+        <div className="stat"><span className="stat-label">Pending requests</span><strong>{pending}</strong></div>
+        <div className="stat"><span className="stat-label">Confirmed</span><strong>{confirmed}</strong></div>
+        <div className="stat"><span className="stat-label">Paid</span><strong>{paid}</strong></div>
+      </div>
+
+      <div className="stack">
+        {requests.slice(0, 8).map((r) => (
+          <article key={r.id} className="list-item">
+            <div className="request-head">
+              <strong>{r.committee || 'Community Request'}</strong>
+              <span className="request-date">{r.status}</span>
+            </div>
+            <div className="muted small">{r.community} · {r.date}</div>
+            <div className="small">{r.needs}</div>
+          </article>
+        ))}
       </div>
     </section>
   )
@@ -821,6 +857,8 @@ function App() {
             />
           </>
         )}
+
+        {tab === 'Admin' && <AdminDashboardPage musicians={musicians} requests={requests} />}
 
         {tab === REQUEST_TAB && (
           <>
