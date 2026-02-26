@@ -170,6 +170,16 @@ h1, h2 { margin: 0; }
   gap: 0.65rem;
 }
 
+.hero-stats {
+  margin-bottom: 0.9rem;
+  width: min(760px, 100%);
+}
+
+.hero-stats .stat {
+  background: rgba(246, 251, 255, 0.88);
+  border-color: rgba(214, 228, 251, 0.9);
+}
+
 .stat {
   background: var(--soft-surface);
   border: 1px solid var(--card-border);

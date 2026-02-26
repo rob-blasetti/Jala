@@ -131,7 +131,7 @@ function MusicianSpotlight({ musicians, title = 'Available musicians', onRequest
   )
 }
 
-function HomePage({ musicians, requests, onOpenMusicianSignup, onOpenExplainer, goToRequest, onRequestMusician }) {
+function HomePage({ musicians, requests, onOpenMusicianSignup, onOpenExplainer, onRequestMusician }) {
   const activeMusicians = musicians.filter((m) => m.available).length
   const [heroTitle, setHeroTitle] = useState('Jala')
   const [heroTitleClass, setHeroTitleClass] = useState('')
@@ -173,6 +173,20 @@ function HomePage({ musicians, requests, onOpenMusicianSignup, onOpenExplainer, 
       <section className="hero-banner">
         <img src={heroImage} alt="Friends in community making music together" className="hero-image" />
         <div className="hero-overlay">
+          <div className="hero-stats stats-grid">
+            <div className="stat">
+              <span className="stat-label">Musicians signed up</span>
+              <strong>{musicians.length}</strong>
+            </div>
+            <div className="stat">
+              <span className="stat-label">Available now</span>
+              <strong>{activeMusicians}</strong>
+            </div>
+            <div className="stat">
+              <span className="stat-label">Open requests</span>
+              <strong>{requests.length}</strong>
+            </div>
+          </div>
           <h1 key={heroAnimKey} className={`typing-title ${heroTitleClass}`}>{heroTitle}<span className="typing-cursor" aria-hidden="true">|</span></h1>
           <p>Connecting musicians and Feast communities through friendship and joyful service.</p>
           <div className="hero-inline-actions">
@@ -184,28 +198,6 @@ function HomePage({ musicians, requests, onOpenMusicianSignup, onOpenExplainer, 
 
       <MusicianSpotlight musicians={musicians} title="Available musicians" onRequest={onRequestMusician} />
 
-      <section className="card stack left">
-        <p className="muted">A warm space for musicians of all kinds to connect with friends nearby and share music at Feast.</p>
-
-        <div className="hero-actions">
-          <Button className="cta secondary" secondary onPress={goToRequest} label="Community Envoy Request" />
-        </div>
-
-        <div className="stats-grid">
-          <div className="stat">
-            <span className="stat-label">Musicians signed up</span>
-            <strong>{musicians.length}</strong>
-          </div>
-          <div className="stat">
-            <span className="stat-label">Available now</span>
-            <strong>{activeMusicians}</strong>
-          </div>
-          <div className="stat">
-            <span className="stat-label">Open requests</span>
-            <strong>{requests.length}</strong>
-          </div>
-        </div>
-      </section>
     </>
   )
 }
@@ -783,7 +775,6 @@ function App() {
             requests={requests}
             onOpenMusicianSignup={() => setShowMusicianSignupModal(true)}
             onOpenExplainer={() => navigateToTab(EXPLAINER_TAB)}
-            goToRequest={() => navigateToTab(REQUEST_TAB)}
             onRequestMusician={requestMusicianByEmail}
           />
         )}
