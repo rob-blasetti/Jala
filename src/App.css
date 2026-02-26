@@ -225,7 +225,7 @@ h1, h2 { margin: 0; }
   right: 0;
   bottom: 0;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.55rem;
   padding: 0.78rem max(0.85rem, env(safe-area-inset-right)) calc(0.75rem + env(safe-area-inset-bottom)) max(0.85rem, env(safe-area-inset-left));
   border-top: 1px solid var(--card-border);
@@ -240,7 +240,20 @@ h1, h2 { margin: 0; }
   color: #1d3f7f;
 }
 
-.bottom-nav button { font-size: 0.79rem; line-height: 1.2; min-height: 48px; }
+.bottom-nav .request-cta {
+  background: var(--primary);
+  border-color: var(--primary-strong);
+  color: var(--primary-text);
+  font-weight: 700;
+}
+
+.bottom-nav .request-cta.active {
+  background: var(--primary-strong);
+  border-color: var(--primary-strong);
+  color: #ffffff;
+}
+
+.bottom-nav button { font-size: 0.82rem; line-height: 1.2; min-height: 48px; }
 
 @media (max-width: 820px) {
   #root { max-width: 760px; }

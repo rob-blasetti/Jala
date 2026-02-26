@@ -4,7 +4,8 @@ import heroImage from './assets/hero-jala.jpg'
 import { api } from './lib/api'
 import './App.css'
 
-const TABS = ['Home', 'Musician Sign Up', 'Feast Request', 'Performance Requests', 'Committee Review']
+const TABS = ['Musicians', 'Community']
+const REQUEST_TAB = 'Request a Musician'
 
 const SAMPLE_MUSICIANS = [
   { id: 's1', name: 'Aaliyah', community: 'Northside', instrument: '🎻 Violin', contact: 'aaliyah@example.com', available: true, performances: 12 },
@@ -322,7 +323,7 @@ function CommitteeReviewPage({ requests, musicians, responses, acceptedByRequest
 }
 
 function App() {
-  const [tab, setTab] = useState('Home')
+  const [tab, setTab] = useState('Community')
   const [musicians, setMusicians] = useState([])
   const [requests, setRequests] = useState([])
   const [responses, setResponses] = useState([])
@@ -417,30 +418,37 @@ function App() {
         {successNotice && <p className="success-banner">{successNotice}</p>}
         {errorNotice && <p className="error-note">{errorNotice}</p>}
 
-        {tab === 'Home' && (
-          <HomePage
-            musicians={musicians}
-            requests={requests}
-            goToMusician={() => setTab('Musician Sign Up')}
-            goToRequest={() => setTab('Feast Request')}
-          />
+        {tab === 'Musicians' && (
+          <>
+            <MusicianSignupPage onAdd={addMusician} musicians={musicians} />
+            <MusicianRequestsPage requests={requests} />
+          </>
         )}
-        {tab === 'Musician Sign Up' && <MusicianSignupPage onAdd={addMusician} musicians={musicians} />}
-        {tab === 'Feast Request' && (
+
+        {tab === 'Community' && (
+          <>
+            <HomePage
+              musicians={musicians}
+              requests={requests}
+              goToMusician={() => setTab('Musicians')}
+              goToRequest={() => setTab(REQUEST_TAB)}
+            />
+            <RequestBoard requests={requests} musicians={musicians} />
+            <CommitteeReviewPage
+              requests={requests}
+              musicians={musicians}
+              responses={responses}
+              acceptedByRequest={acceptedByRequest}
+              onAccept={acceptMusician}
+            />
+          </>
+        )}
+
+        {tab === REQUEST_TAB && (
           <>
             <FeastRequestPage onAdd={addRequest} />
             <RequestBoard requests={requests} musicians={musicians} />
           </>
-        )}
-        {tab === 'Performance Requests' && <MusicianRequestsPage requests={requests} />}
-        {tab === 'Committee Review' && (
-          <CommitteeReviewPage
-            requests={requests}
-            musicians={musicians}
-            responses={responses}
-            acceptedByRequest={acceptedByRequest}
-            onAccept={acceptMusician}
-          />
         )}
       </main>
 
@@ -450,6 +458,9 @@ function App() {
             {item}
           </button>
         ))}
+        <button className={`request-cta ${tab === REQUEST_TAB ? 'active' : ''}`} onClick={() => setTab(REQUEST_TAB)}>
+          Request a Musician
+        </button>
       </nav>
     </div>
   )
