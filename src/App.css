@@ -332,7 +332,7 @@ h1, h2 { margin: 0; }
   top: 0;
   z-index: 20;
   display: grid;
-  grid-template-columns: 1.15fr repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 0.55rem;
   align-items: center;
   padding-top: 0.78rem;
@@ -344,13 +344,20 @@ h1, h2 { margin: 0; }
   backdrop-filter: blur(6px);
 }
 
-.bottom-nav .brand {
+.bottom-nav .brand-button {
   font-weight: 800;
-  font-size: 1.2rem;
+  font-size: 1.05rem;
   color: #17356f;
   letter-spacing: 0.01em;
   text-align: left;
   padding-left: 0.25rem;
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.bottom-nav .brand-button:hover {
+  border-color: var(--secondary-border);
+  background: #eef3ff;
 }
 
 .bottom-nav .active {
@@ -381,7 +388,7 @@ h1, h2 { margin: 0; }
   .hero-image { height: 240px; object-position: center; }
   .hero-overlay h1 { font-size: 1.9rem; }
   .bottom-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .bottom-nav .brand { grid-column: 1 / -1; padding-left: 0; }
+  .bottom-nav .brand-button { grid-column: 1 / -1; padding-left: 0; }
 }
 
 @media (min-width: 980px) {

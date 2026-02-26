@@ -680,7 +680,7 @@ function App() {
   return (
     <div className="app-shell">
       <nav className="bottom-nav" aria-label="Primary navigation">
-        <div className="brand">Jala</div>
+        <button className="brand-button" onClick={() => navigateToTab('Home')}>Jala</button>
         {TABS.map((item) => (
           <button key={item} className={tab === item ? 'active' : ''} onClick={() => navigateToTab(item)}>
             {item}
