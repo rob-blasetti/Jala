@@ -803,8 +803,8 @@ function App() {
   return (
     <div className="app-shell">
       <div className="top-banner">
-        <span>The second drop of the Liquid Spirit experience.</span>
-        <a href="https://liquidspirit.org" target="_blank" rel="noreferrer">Liquid Spirit</a>
+        <span>The second drop of the </span>
+        <a href="https://liquidspirit.org" target="_blank" rel="noreferrer">Liquid Spirit experience.</a>
       </div>
 
       <nav className="bottom-nav" aria-label="Primary navigation">
