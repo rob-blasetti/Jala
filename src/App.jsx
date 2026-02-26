@@ -4,11 +4,12 @@ import heroImage from './assets/hero-jala.jpg'
 import { api } from './lib/api'
 import './App.css'
 
-const TABS = ['Home', 'Musicians', 'Community']
+const TABS = ['Home', 'Musicians', 'Categories', 'Community']
 const REQUEST_TAB = 'Community Envoy Request'
 
 const tabToPath = (tab) => {
   if (tab === 'Musicians') return '/browse'
+  if (tab === 'Categories') return '/categories'
   if (tab === 'Community') return '/community'
   if (tab === REQUEST_TAB) return '/request'
   return '/'
@@ -16,6 +17,7 @@ const tabToPath = (tab) => {
 
 const pathToTab = (path) => {
   if (path === '/browse') return 'Musicians'
+  if (path === '/categories') return 'Categories'
   if (path === '/community') return 'Community'
   if (path === '/request') return REQUEST_TAB
   return 'Home'
@@ -408,6 +410,36 @@ function MusicianRequestsPage({ requests }) {
   )
 }
 
+function CategoriesPage() {
+  const categories = [
+    { title: 'Singing & Vocals', items: ['Solo voice', 'Duet', 'Choir support', 'Children songs'] },
+    { title: 'Strings', items: ['Guitar', 'Violin', 'Cello', 'Ukulele'] },
+    { title: 'Keys & Piano', items: ['Piano', 'Keyboard', 'Ambient pads'] },
+    { title: 'Rhythm & Percussion', items: ['Hand percussion', 'Cajon', 'Light drums'] },
+    { title: 'Wind & Brass', items: ['Flute', 'Saxophone', 'Trumpet'] },
+    { title: 'Devotional Styles', items: ['Reflective', 'Joyful', 'Traditional', 'Contemporary'] },
+  ]
+
+  return (
+    <section className="card left">
+      <h2>Music Categories</h2>
+      <p className="muted small">Browse music types to help your community request the right support.</p>
+      <div className="categories-grid">
+        {categories.map((category) => (
+          <article key={category.title} className="category-card">
+            <h3>{category.title}</h3>
+            <ul>
+              {category.items.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 function CommitteeReviewPage({ requests, musicians, responses, acceptedByRequest, onAccept }) {
   const musicianById = useMemo(() => Object.fromEntries(musicians.map((m) => [m.id, m])), [musicians])
 
@@ -680,6 +712,8 @@ function App() {
             <MusicianRequestsPage requests={requests} />
           </>
         )}
+
+        {tab === 'Categories' && <CategoriesPage />}
 
         {tab === 'Community' && (
           <>
