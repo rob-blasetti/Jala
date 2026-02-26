@@ -5,7 +5,7 @@ import { api } from './lib/api'
 import './App.css'
 
 const TABS = ['Home', 'Musicians', 'Community']
-const REQUEST_TAB = 'Request a Musician'
+const REQUEST_TAB = 'Community Envoy Request'
 
 const SAMPLE_MUSICIANS = [
   { id: 's1', name: 'Aaliyah', community: 'Northside', instrument: '🎻 Violin', contact: 'aaliyah@example.com', available: true, performances: 12 },
@@ -149,7 +149,7 @@ function HomePage({ musicians, requests, goToMusician, goToRequest, onRequestMus
 
         <div className="hero-actions">
           <Button className="cta" onPress={goToMusician} label="I’m a Musician" />
-          <Button className="cta secondary" secondary onPress={goToRequest} label="Request a Musician" />
+          <Button className="cta secondary" secondary onPress={goToRequest} label="Community Envoy Request" />
         </div>
 
         <div className="stats-grid">
@@ -618,7 +618,7 @@ function App() {
           </button>
         ))}
         <button className={`request-cta ${tab === REQUEST_TAB ? 'active' : ''}`} onClick={() => setTab(REQUEST_TAB)}>
-          Request a Musician
+          Community Envoy Request
         </button>
       </nav>
 
