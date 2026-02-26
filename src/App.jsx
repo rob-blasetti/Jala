@@ -229,19 +229,24 @@ function PerformanceRequestCard({ request }) {
 }
 
 function FeastRequestPage({ onAdd }) {
-  const [form, setForm] = useState({ committee: '', community: '', date: '', needs: '', notes: '' })
+  const [form, setForm] = useState({ committee: '', community: '', date: '', needs: '', notes: '', amountAud: '150' })
   const [error, setError] = useState('')
   const update = (key, value) => setForm((f) => ({ ...f, [key]: value }))
 
   const submit = (e) => {
     e.preventDefault()
+    const amount = Number(form.amountAud)
     if (!form.committee || !form.community || !form.date || !form.needs) {
       setError('Please complete committee, community, date, and music needs.')
       return
     }
+    if (Number.isNaN(amount) || amount < 5 || amount > 300) {
+      setError('Amount must be between AUD $5 and $300.')
+      return
+    }
 
-    onAdd(form)
-    setForm({ committee: '', community: '', date: '', needs: '', notes: '' })
+    onAdd({ ...form, amountAud: amount })
+    setForm({ committee: '', community: '', date: '', needs: '', notes: '', amountAud: '150' })
     setError('')
   }
 
@@ -254,7 +259,9 @@ function FeastRequestPage({ onAdd }) {
         <Input label="Community name" value={form.community} onChange={(e) => update('community', e.target.value)} />
         <Input label="Date" type="date" value={form.date} onChange={(e) => update('date', e.target.value)} />
         <Input label="Music needed" value={form.needs} onChange={(e) => update('needs', e.target.value)} />
+        <Input label="Musician payment (AUD)" type="number" min="5" max="300" value={form.amountAud} onChange={(e) => update('amountAud', e.target.value)} />
         <TextArea label="Notes (optional)" value={form.notes} onChange={(e) => update('notes', e.target.value)} />
+        <p className="muted small">Includes a standard 10% platform fee at checkout.</p>
         {error && <p className="error-note">{error}</p>}
         <Button type="submit" label="Share Feast request" />
       </form>
@@ -438,6 +445,36 @@ function App() {
   }, [])
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const payment = params.get('payment')
+    const sessionId = params.get('session_id')
+
+    if (payment === 'success' && sessionId) {
+      api
+        .verifyCheckoutSession({ sessionId })
+        .then((result) => {
+          if (result.paid) {
+            setRequests((prev) => prev.map((r) => (r.id === result.requestId ? { ...r, status: 'Paid' } : r)))
+            setSuccessNotice('Payment confirmed. Your request is now marked Paid.')
+          } else {
+            setSuccessNotice('Payment completed. Verification is still processing.')
+          }
+        })
+        .catch((error) => setErrorNotice(`Could not verify payment: ${error.message}`))
+        .finally(() => {
+          const cleanUrl = window.location.pathname
+          window.history.replaceState({}, '', cleanUrl)
+        })
+    }
+
+    if (payment === 'cancel') {
+      setErrorNotice('Payment was cancelled. You can try again anytime.')
+      const cleanUrl = window.location.pathname
+      window.history.replaceState({}, '', cleanUrl)
+    }
+  }, [])
+
+  useEffect(() => {
     if (!successNotice && !errorNotice) return
     const timer = setTimeout(() => {
       setSuccessNotice('')
@@ -460,6 +497,19 @@ function App() {
     try {
       const created = await api.createRequest({ ...payload, status: 'Open' })
       setRequests((prev) => [created, ...prev])
+
+      const checkout = await api.createCheckoutSession({
+        requestId: created.id,
+        committee: created.committee,
+        needs: created.needs,
+        amountAud: payload.amountAud,
+      })
+
+      if (checkout?.url) {
+        window.location.href = checkout.url
+        return
+      }
+
       setSuccessNotice('Feast request submitted.')
     } catch (error) {
       setErrorNotice(`Could not save request: ${error.message}`)

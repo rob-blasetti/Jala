@@ -19,6 +19,8 @@ export const api = {
   getRequests: () => request('/api/requests'),
   createRequest: (payload) => request('/api/requests', { method: 'POST', body: JSON.stringify(payload) }),
   patchRequest: (payload) => request('/api/requests', { method: 'PATCH', body: JSON.stringify(payload) }),
+  createCheckoutSession: (payload) => request('/api/payments/checkout', { method: 'POST', body: JSON.stringify(payload) }),
+  verifyCheckoutSession: (payload) => request('/api/payments/verify', { method: 'POST', body: JSON.stringify(payload) }),
 
   getResponses: () => request('/api/responses'),
   createResponse: (payload) => request('/api/responses', { method: 'POST', body: JSON.stringify(payload) }),
