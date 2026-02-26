@@ -85,12 +85,26 @@
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
 }
 
-.typing-title { display: inline-flex; align-items: center; gap: 0.08rem; }
+.typing-title { display: inline-flex; align-items: center; gap: 0.08rem; transition: transform 220ms ease, opacity 220ms ease; }
 .typing-cursor { animation: blink 1s steps(1) infinite; opacity: 0.95; }
+.typing-title.joy-pop { animation: joyPop 520ms ease; }
+.typing-title.fade-in { animation: softFadeIn 420ms ease; }
 
 @keyframes blink {
   0%, 49% { opacity: 1; }
   50%, 100% { opacity: 0; }
+}
+
+@keyframes joyPop {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.08) rotate(-1deg); }
+  70% { transform: scale(0.98) rotate(0.5deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes softFadeIn {
+  0% { opacity: 0.25; transform: translateY(2px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 .hero-overlay p {

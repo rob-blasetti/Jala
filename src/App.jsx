@@ -98,19 +98,36 @@ function MusicianSpotlight({ musicians, title = 'Available musicians', onRequest
 function HomePage({ musicians, requests, goToMusician, goToRequest, onRequestMusician }) {
   const activeMusicians = musicians.filter((m) => m.available).length
   const [heroTitle, setHeroTitle] = useState('Jala')
+  const [heroTitleClass, setHeroTitleClass] = useState('')
 
   useEffect(() => {
-    const forwardFrames = ['Jala', 'Jalal', 'Jalala']
-    const backwardFrames = ['Jalal', 'Jala']
-    const sequence = [...forwardFrames, ...backwardFrames]
-    let index = 0
+    const sequence = [
+      { text: 'Jala', className: '', wait: 520 },
+      { text: 'Jalalala', className: 'joy-pop', wait: 760 },
+      { text: 'Jalal', className: '', wait: 520 },
+      { text: 'Jala', className: 'fade-in', wait: 680 },
+    ]
 
-    const timer = setInterval(() => {
-      setHeroTitle(sequence[index])
-      index = (index + 1) % sequence.length
-    }, 430)
+    let cancelled = false
+    let step = 0
+    let timer
 
-    return () => clearInterval(timer)
+    const run = () => {
+      const current = sequence[step]
+      setHeroTitle(current.text)
+      setHeroTitleClass(current.className)
+      step = (step + 1) % sequence.length
+      timer = setTimeout(() => {
+        if (!cancelled) run()
+      }, current.wait)
+    }
+
+    run()
+
+    return () => {
+      cancelled = true
+      clearTimeout(timer)
+    }
   }, [])
 
   return (
@@ -118,7 +135,7 @@ function HomePage({ musicians, requests, goToMusician, goToRequest, onRequestMus
       <section className="hero-banner">
         <img src={heroImage} alt="Friends in community making music together" className="hero-image" />
         <div className="hero-overlay">
-          <h1 className="typing-title">{heroTitle}<span className="typing-cursor" aria-hidden="true">|</span></h1>
+          <h1 className={`typing-title ${heroTitleClass}`}>{heroTitle}<span className="typing-cursor" aria-hidden="true">|</span></h1>
           <p>Connecting musicians and Feast communities through friendship and joyful service.</p>
         </div>
       </section>
