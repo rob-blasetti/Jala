@@ -7,11 +7,13 @@ import './App.css'
 
 const TABS = ['Home', 'Musicians', 'Categories', 'Community']
 const REQUEST_TAB = 'Community Envoy Request'
+const EXPLAINER_TAB = 'Explainer'
 
 const tabToPath = (tab) => {
   if (tab === 'Musicians') return '/browse'
   if (tab === 'Categories') return '/categories'
   if (tab === 'Community') return '/community'
+  if (tab === EXPLAINER_TAB) return '/explainer'
   if (tab === REQUEST_TAB) return '/request'
   return '/'
 }
@@ -20,6 +22,7 @@ const pathToTab = (path) => {
   if (path === '/browse') return 'Musicians'
   if (path === '/categories') return 'Categories'
   if (path === '/community') return 'Community'
+  if (path === '/explainer') return EXPLAINER_TAB
   if (path === '/request') return REQUEST_TAB
   return 'Home'
 }
@@ -128,7 +131,7 @@ function MusicianSpotlight({ musicians, title = 'Available musicians', onRequest
   )
 }
 
-function HomePage({ musicians, requests, onOpenMusicianSignup, goToRequest, onRequestMusician }) {
+function HomePage({ musicians, requests, onOpenMusicianSignup, onOpenExplainer, goToRequest, onRequestMusician }) {
   const activeMusicians = musicians.filter((m) => m.available).length
   const [heroTitle, setHeroTitle] = useState('Jala')
   const [heroTitleClass, setHeroTitleClass] = useState('')
@@ -172,6 +175,10 @@ function HomePage({ musicians, requests, onOpenMusicianSignup, goToRequest, onRe
         <div className="hero-overlay">
           <h1 key={heroAnimKey} className={`typing-title ${heroTitleClass}`}>{heroTitle}<span className="typing-cursor" aria-hidden="true">|</span></h1>
           <p>Connecting musicians and Feast communities through friendship and joyful service.</p>
+          <div className="hero-inline-actions">
+            <button className="hero-inline-btn primary" onClick={onOpenMusicianSignup}>Sign up Musician</button>
+            <button className="hero-inline-btn" onClick={onOpenExplainer}>Explainer</button>
+          </div>
         </div>
       </section>
 
@@ -181,7 +188,6 @@ function HomePage({ musicians, requests, onOpenMusicianSignup, goToRequest, onRe
         <p className="muted">A warm space for musicians of all kinds to connect with friends nearby and share music at Feast.</p>
 
         <div className="hero-actions">
-          <Button className="cta" onPress={onOpenMusicianSignup} label="I’m a Musician" />
           <Button className="cta secondary" secondary onPress={goToRequest} label="Community Envoy Request" />
         </div>
 
@@ -438,6 +444,35 @@ function MusicianRequestsPage({ requests }) {
           ))}
         </ul>
       )}
+    </section>
+  )
+}
+
+function ExplainerPage({ onOpenMusicianSignup, goToRequest }) {
+  return (
+    <section className="card left stack">
+      <h2>How Jala Works</h2>
+      <p className="muted">Jala connects community envoys with musicians for Feast and Holy Day gatherings in a simple, relational way.</p>
+
+      <div className="stack">
+        <div>
+          <strong>1) Musicians join</strong>
+          <p className="muted small">Musicians create a profile with their instrument, location, community, and compensation preference.</p>
+        </div>
+        <div>
+          <strong>2) Community envoy submits a request</strong>
+          <p className="muted small">An individual submits event details, music needs, and payment amount on behalf of the community.</p>
+        </div>
+        <div>
+          <strong>3) Match and confirm</strong>
+          <p className="muted small">Communities review musicians, send requests, and confirm who will serve for the gathering.</p>
+        </div>
+      </div>
+
+      <div className="hero-actions">
+        <Button className="cta" onPress={onOpenMusicianSignup} label="Sign up Musician" />
+        <Button className="cta secondary" secondary onPress={goToRequest} label="Community Envoy Request" />
+      </div>
     </section>
   )
 }
@@ -747,12 +782,20 @@ function App() {
             musicians={musicians}
             requests={requests}
             onOpenMusicianSignup={() => setShowMusicianSignupModal(true)}
+            onOpenExplainer={() => navigateToTab(EXPLAINER_TAB)}
             goToRequest={() => navigateToTab(REQUEST_TAB)}
             onRequestMusician={requestMusicianByEmail}
           />
         )}
 
         {tab === 'Musicians' && <MusicianRequestsPage requests={requests} />}
+
+        {tab === EXPLAINER_TAB && (
+          <ExplainerPage
+            onOpenMusicianSignup={() => setShowMusicianSignupModal(true)}
+            goToRequest={() => navigateToTab(REQUEST_TAB)}
+          />
+        )}
 
         {tab === 'Categories' && <CategoriesPage />}
 

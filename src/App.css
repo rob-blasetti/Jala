@@ -115,6 +115,29 @@
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.32);
 }
 
+.hero-inline-actions {
+  margin-top: 0.8rem;
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.hero-inline-btn {
+  border: 1px solid #c8d8f7;
+  background: rgba(245, 250, 255, 0.95);
+  color: #1f3c74;
+  border-radius: 8px;
+  padding: 0.52rem 0.72rem;
+  font-weight: 700;
+  font-size: 0.86rem;
+}
+
+.hero-inline-btn.primary {
+  border-color: var(--primary-strong);
+  background: var(--primary);
+  color: #ffffff;
+}
+
 .left { text-align: left; }
 .stack { display: grid; gap: 0.8rem; }
 .small { font-size: 0.86rem; }
