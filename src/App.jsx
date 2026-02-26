@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Button, Input, TextArea } from 'liquid-spirit-styleguide/ui-primitives/web'
 import heroImage from './assets/hero-jala.jpg'
 import { api } from './lib/api'
+import { useMusiciansContext } from './context/MusiciansContext'
 import './App.css'
 
 const TABS = ['Home', 'Musicians', 'Categories', 'Community']
@@ -411,31 +412,44 @@ function MusicianRequestsPage({ requests }) {
 }
 
 function CategoriesPage() {
+  const { categorized, loading } = useMusiciansContext()
+
   const categories = [
-    { title: 'Singing & Vocals', items: ['Solo voice', 'Duet', 'Choir support', 'Children songs'] },
-    { title: 'Strings', items: ['Guitar', 'Violin', 'Cello', 'Ukulele'] },
-    { title: 'Keys & Piano', items: ['Piano', 'Keyboard', 'Ambient pads'] },
-    { title: 'Rhythm & Percussion', items: ['Hand percussion', 'Cajon', 'Light drums'] },
-    { title: 'Wind & Brass', items: ['Flute', 'Saxophone', 'Trumpet'] },
-    { title: 'Devotional Styles', items: ['Reflective', 'Joyful', 'Traditional', 'Contemporary'] },
+    'Singing & Vocals',
+    'Strings',
+    'Keys & Piano',
+    'Rhythm & Percussion',
+    'Wind & Brass',
+    'Other',
   ]
 
   return (
     <section className="card left">
       <h2>Music Categories</h2>
-      <p className="muted small">Browse music types to help your community request the right support.</p>
-      <div className="categories-grid">
-        {categories.map((category) => (
-          <article key={category.title} className="category-card">
-            <h3>{category.title}</h3>
-            <ul>
-              {category.items.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </article>
-        ))}
-      </div>
+      <p className="muted small">Browse musicians grouped by instrument and style category.</p>
+      {loading ? (
+        <p className="muted">Loading musician categories…</p>
+      ) : (
+        <div className="categories-grid">
+          {categories.map((title) => {
+            const members = categorized[title] || []
+            return (
+              <article key={title} className="category-card">
+                <h3>{title} <span className="muted small">({members.length})</span></h3>
+                {!members.length ? (
+                  <p className="muted small">No musicians yet.</p>
+                ) : (
+                  <ul>
+                    {members.map((musician) => (
+                      <li key={musician.id}>{musician.name} — {musician.instrument}</li>
+                    ))}
+                  </ul>
+                )}
+              </article>
+            )
+          })}
+        </div>
+      )}
     </section>
   )
 }

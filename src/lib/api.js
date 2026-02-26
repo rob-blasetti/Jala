@@ -14,6 +14,7 @@ const request = async (path, options = {}) => {
 
 export const api = {
   getMusicians: () => request('/api/musicians'),
+  getAllMusicians: () => request('/api/musicians/all'),
   createMusician: (payload) => request('/api/musicians', { method: 'POST', body: JSON.stringify(payload) }),
 
   getRequests: () => request('/api/requests'),
