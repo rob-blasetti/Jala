@@ -815,7 +815,7 @@ function App() {
           </button>
         ))}
         <button className={`request-cta ${tab === REQUEST_TAB ? 'active' : ''}`} onClick={() => navigateToTab(REQUEST_TAB)}>
-          Request A Performanc
+          Request A Performance
         </button>
       </nav>
 
