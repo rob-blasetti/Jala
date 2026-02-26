@@ -42,13 +42,15 @@ function MusicianCard({ musician, showContact = false }) {
   )
 }
 
-function MusicianSpotlight({ musicians }) {
+function MusicianSpotlight({ musicians, title = 'Available musicians' }) {
+  const available = musicians.filter((m) => m.available)
+
   return (
     <section className="card left stack">
-      <h3>Musicians in the community</h3>
-      <p className="muted small">Examples of who’s signing up: 🎻 🎸 🥁 🎹 🎤</p>
+      <h3>{title}</h3>
+      <p className="muted small">Friends currently available to serve nearby communities.</p>
       <div className="stack">
-        {musicians.slice(0, 4).map((m) => (
+        {(available.length ? available : musicians).slice(0, 6).map((m) => (
           <MusicianCard key={m.id} musician={m} />
         ))}
       </div>
@@ -68,6 +70,8 @@ function HomePage({ musicians, requests, goToMusician, goToRequest }) {
           <p>Connecting musicians and Feast communities through friendship and joyful service.</p>
         </div>
       </section>
+
+      <MusicianSpotlight musicians={musicians} title="Available musicians" />
 
       <section className="card stack left">
         <p className="muted">A warm space for musicians of all kinds to connect with friends nearby and share music at Feast.</p>
@@ -92,8 +96,6 @@ function HomePage({ musicians, requests, goToMusician, goToRequest }) {
           </div>
         </div>
       </section>
-
-      <MusicianSpotlight musicians={musicians} />
     </>
   )
 }
