@@ -24,8 +24,26 @@ const SAMPLE_RESPONSES = [
   { id: 'rsp3', requestId: 'r2', musicianId: 's2', message: 'I can do a welcoming upbeat opening song.' },
 ]
 
-function MusicianCard({ musician, showContact = false }) {
+function MusicianCard({ musician, showContact = false, onRequest }) {
   const initial = musician.name?.[0]?.toUpperCase() || '🎵'
+  const [showRequestForm, setShowRequestForm] = useState(false)
+  const [requestDetails, setRequestDetails] = useState({
+    requesterName: '',
+    contactEmail: '',
+    eventType: '',
+    eventDate: '',
+    notes: '',
+  })
+
+  const updateRequest = (key, value) => setRequestDetails((prev) => ({ ...prev, [key]: value }))
+
+  const submitRequest = (event) => {
+    event.preventDefault()
+    if (!onRequest) return
+    onRequest(musician, requestDetails)
+    setShowRequestForm(false)
+    setRequestDetails({ requesterName: '', contactEmail: '', eventType: '', eventDate: '', notes: '' })
+  }
 
   return (
     <article className="musician-card">
@@ -37,12 +55,31 @@ function MusicianCard({ musician, showContact = false }) {
         </div>
         <div className="muted">{musician.instrument} · {musician.community}</div>
         {showContact && <div className="muted small">📬 {musician.contact}</div>}
+
+        {onRequest && (
+          <div className="request-inline-wrap">
+            <button className="mini-request-btn" onClick={() => setShowRequestForm((v) => !v)}>
+              {showRequestForm ? 'Cancel' : 'Request this Musician'}
+            </button>
+
+            {showRequestForm && (
+              <form className="mini-request-form" onSubmit={submitRequest}>
+                <Input label="Your name" value={requestDetails.requesterName} onChange={(e) => updateRequest('requesterName', e.target.value)} />
+                <Input label="Your email" type="email" value={requestDetails.contactEmail} onChange={(e) => updateRequest('contactEmail', e.target.value)} />
+                <Input label="Occasion" placeholder="Feast or Holy Day" value={requestDetails.eventType} onChange={(e) => updateRequest('eventType', e.target.value)} />
+                <Input label="Date" type="date" value={requestDetails.eventDate} onChange={(e) => updateRequest('eventDate', e.target.value)} />
+                <TextArea label="Message" value={requestDetails.notes} onChange={(e) => updateRequest('notes', e.target.value)} />
+                <button type="submit" className="mini-request-submit">Send request email</button>
+              </form>
+            )}
+          </div>
+        )}
       </div>
     </article>
   )
 }
 
-function MusicianSpotlight({ musicians, title = 'Available musicians' }) {
+function MusicianSpotlight({ musicians, title = 'Available musicians', onRequest }) {
   const available = musicians.filter((m) => m.available)
 
   return (
@@ -51,14 +88,14 @@ function MusicianSpotlight({ musicians, title = 'Available musicians' }) {
       <p className="muted small">Friends currently available to serve nearby communities.</p>
       <div className="stack">
         {(available.length ? available : musicians).slice(0, 6).map((m) => (
-          <MusicianCard key={m.id} musician={m} />
+          <MusicianCard key={m.id} musician={m} onRequest={onRequest} />
         ))}
       </div>
     </section>
   )
 }
 
-function HomePage({ musicians, requests, goToMusician, goToRequest }) {
+function HomePage({ musicians, requests, goToMusician, goToRequest, onRequestMusician }) {
   const activeMusicians = musicians.filter((m) => m.available).length
 
   return (
@@ -71,7 +108,7 @@ function HomePage({ musicians, requests, goToMusician, goToRequest }) {
         </div>
       </section>
 
-      <MusicianSpotlight musicians={musicians} title="Available musicians" />
+      <MusicianSpotlight musicians={musicians} title="Available musicians" onRequest={onRequestMusician} />
 
       <section className="card stack left">
         <p className="muted">A warm space for musicians of all kinds to connect with friends nearby and share music at Feast.</p>
@@ -395,6 +432,27 @@ function App() {
     }
   }
 
+  const requestMusicianByEmail = (musician, details) => {
+    if (!musician?.contact || !String(musician.contact).includes('@')) {
+      setErrorNotice('This musician does not have a valid email contact yet.')
+      return
+    }
+
+    const subject = encodeURIComponent(`Music request for upcoming ${details.eventType || 'Feast/Holy Day'}`)
+    const body = encodeURIComponent(
+      `Hi ${musician.name},\n\n` +
+        `I'd love to request your music support for an upcoming ${details.eventType || 'Feast/Holy Day'}.\n\n` +
+        `Date: ${details.eventDate || 'TBC'}\n` +
+        `From: ${details.requesterName || 'Community member'}\n` +
+        `Contact: ${details.contactEmail || 'Not provided'}\n\n` +
+        `Details:\n${details.notes || 'No additional notes'}\n\n` +
+        `Blessings,`
+    )
+
+    window.location.href = `mailto:${musician.contact}?subject=${subject}&body=${body}`
+    setSuccessNotice(`Email draft opened for ${musician.name}.`)
+  }
+
   const acceptMusician = async (requestId, musicianId) => {
     try {
       const existingMatch = Object.entries(acceptedByRequest).find(([rid]) => rid === requestId)
@@ -438,6 +496,7 @@ function App() {
             requests={requests}
             goToMusician={() => setTab('Musicians')}
             goToRequest={() => setTab(REQUEST_TAB)}
+            onRequestMusician={requestMusicianByEmail}
           />
         )}
 
