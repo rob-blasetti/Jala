@@ -221,8 +221,7 @@ h1, h2 { margin: 0; }
 
 .musician-card {
   display: inline-grid;
-  grid-template-columns: 52px 1fr;
-  gap: 0.75rem;
+  gap: 0.5rem;
   align-items: start;
   background: #f9fbff;
   border: 1px solid var(--card-border);
@@ -246,9 +245,19 @@ h1, h2 { margin: 0; }
   font-weight: 700;
 }
 
-.musician-main { display: grid; gap: 0.35rem; }
+.musician-head-row {
+  display: grid;
+  grid-template-columns: 52px 1fr auto;
+  gap: 0.65rem;
+  align-items: center;
+}
 
-.musician-head { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+.musician-head-main {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.musician-main { display: grid; gap: 0.35rem; }
 
 .community-chip {
   border: 1px solid var(--secondary-border);
@@ -260,8 +269,7 @@ h1, h2 { margin: 0; }
   white-space: nowrap;
 }
 
-.musician-meta-row { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
-.star { font-size: 0.85rem; color: var(--star); white-space: nowrap; }
+.musician-meta-row { display: flex; align-items: center; gap: 0.5rem; }
 
 .musician-bio {
   margin: 0.15rem 0 0;

@@ -71,19 +71,18 @@ function MusicianCard({ musician, showContact = false, onRequest }) {
 
   return (
     <article className="musician-card">
-      <div className="avatar-wrap" aria-hidden="true">{initial}</div>
+      <div className="musician-head-row">
+        <div className="avatar-wrap" aria-hidden="true">{initial}</div>
+        <div className="musician-head-main">
+          <strong>{musician.name}</strong>
+          <div className="muted">{category} · {musician.instrument}</div>
+        </div>
+        <CommunityChip label={musician.community} />
+      </div>
 
       <div className="musician-main">
-        <div className="musician-head">
-          <strong>{musician.name}</strong>
-          <CommunityChip label={musician.community} />
-        </div>
-
-        <div className="muted">{category} · {musician.instrument}</div>
-
         <div className="musician-meta-row">
           <span className="muted small">📍 {location}</span>
-          <span className="star">⭐ {musician.performances ?? 0}</span>
         </div>
 
         {musician.bio && <p className="musician-bio">{musician.bio}</p>}
