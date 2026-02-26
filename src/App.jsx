@@ -410,31 +410,45 @@ function RequestBoard({ requests, musicians }) {
   )
 }
 
-function MusicianRequestsPage({ requests }) {
-  const [communityFilter, setCommunityFilter] = useState('')
+function BrowseMusiciansPage({ musicians, onRequestMusician }) {
+  const [query, setQuery] = useState('')
+  const [category, setCategory] = useState('All')
 
-  const filteredRequests = useMemo(() => {
-    if (!communityFilter) return requests
-    return requests.filter((r) => r.community.toLowerCase().includes(communityFilter.toLowerCase()))
-  }, [requests, communityFilter])
+  const categories = useMemo(() => ['All', ...new Set(musicians.map((m) => m.musicCategory || 'Other'))], [musicians])
+
+  const filtered = useMemo(() => {
+    return musicians.filter((m) => {
+      const byCategory = category === 'All' || (m.musicCategory || 'Other') === category
+      const text = `${m.name} ${m.community} ${m.instrument} ${m.city || ''}`.toLowerCase()
+      const byQuery = !query || text.includes(query.toLowerCase())
+      return byCategory && byQuery
+    })
+  }, [musicians, query, category])
 
   return (
     <section className="card left">
-      <h2>Performance Requests</h2>
-      <p className="muted small">Browse requests from committees looking for musicians.</p>
-      <div className="filter-row">
-        <Input label="Filter by community" placeholder="e.g. Northside" value={communityFilter} onChange={(e) => setCommunityFilter(e.target.value)} />
+      <h2>Browse Musicians</h2>
+      <p className="muted small">Find musicians by name, instrument, category, or location.</p>
+      <div className="filter-row stack">
+        <Input label="Search" placeholder="Name, instrument, city..." value={query} onChange={(e) => setQuery(e.target.value)} />
+        <label className="stack left small">
+          Category
+          <select value={category} onChange={(e) => setCategory(e.target.value)}>
+            {categories.map((c) => (
+              <option key={c}>{c}</option>
+            ))}
+          </select>
+        </label>
       </div>
-      {!filteredRequests.length ? (
-        <p className="muted">No requests match this filter right now.</p>
+
+      {!filtered.length ? (
+        <p className="muted">No musicians match your filters right now.</p>
       ) : (
-        <ul className="list stack">
-          {filteredRequests.map((r) => (
-            <li key={r.id} className="list-item">
-              <PerformanceRequestCard request={r} />
-            </li>
+        <div className="stack">
+          {filtered.map((musician) => (
+            <MusicianCard key={musician.id} musician={musician} onRequest={onRequestMusician} showContact />
           ))}
-        </ul>
+        </div>
       )}
     </section>
   )
@@ -784,7 +798,7 @@ function App() {
           />
         )}
 
-        {tab === 'Musicians' && <MusicianRequestsPage requests={requests} />}
+        {tab === 'Musicians' && <BrowseMusiciansPage musicians={musicians} onRequestMusician={requestMusicianByEmail} />}
 
         {tab === EXPLAINER_TAB && (
           <ExplainerPage
