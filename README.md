@@ -63,7 +63,7 @@ Stripe setup notes:
 Schema file: `supabase/schema.sql`
 
 Tables:
-- `musicians`
+- `musicians` (includes `compensation_preference`)
 - `requests`
 - `responses`
 - `matches`

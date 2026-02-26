@@ -8,9 +8,9 @@ const TABS = ['Home', 'Musicians', 'Community']
 const REQUEST_TAB = 'Community Envoy Request'
 
 const SAMPLE_MUSICIANS = [
-  { id: 's1', name: 'Aaliyah', community: 'Northside', instrument: '🎻 Violin', contact: 'aaliyah@example.com', available: true, performances: 12 },
-  { id: 's2', name: 'Sam', community: 'West End', instrument: '🎸 Guitar', contact: 'sam@example.com', available: true, performances: 8 },
-  { id: 's3', name: 'Noah', community: 'Riverdale', instrument: '🥁 Drums', contact: 'noah@example.com', available: false, performances: 5 },
+  { id: 's1', name: 'Aaliyah', community: 'Northside', instrument: '🎻 Violin', contact: 'aaliyah@example.com', available: true, performances: 12, compensationPreference: 'Open to honorarium' },
+  { id: 's2', name: 'Sam', community: 'West End', instrument: '🎸 Guitar', contact: 'sam@example.com', available: true, performances: 8, compensationPreference: 'Voluntary service' },
+  { id: 's3', name: 'Noah', community: 'Riverdale', instrument: '🥁 Drums', contact: 'noah@example.com', available: false, performances: 5, compensationPreference: 'Professional rate' },
 ]
 
 const SAMPLE_REQUESTS = [
@@ -54,6 +54,7 @@ function MusicianCard({ musician, showContact = false, onRequest }) {
           <span className="star">⭐ {musician.performances ?? 0}</span>
         </div>
         <div className="muted">{musician.instrument} · {musician.community}</div>
+        {musician.compensationPreference && <div className="muted small">💳 {musician.compensationPreference}</div>}
         {showContact && <div className="muted small">📬 {musician.contact}</div>}
 
         {onRequest && (
@@ -172,7 +173,7 @@ function HomePage({ musicians, requests, goToMusician, goToRequest, onRequestMus
 }
 
 function MusicianSignupPage({ onAdd, musicians }) {
-  const [form, setForm] = useState({ name: '', community: '', instrument: '', contact: '', available: true })
+  const [form, setForm] = useState({ name: '', community: '', instrument: '', contact: '', compensationPreference: 'Voluntary service', available: true })
   const [error, setError] = useState('')
 
   const update = (key, value) => setForm((f) => ({ ...f, [key]: value }))
@@ -185,7 +186,7 @@ function MusicianSignupPage({ onAdd, musicians }) {
     }
 
     onAdd(form)
-    setForm({ name: '', community: '', instrument: '', contact: '', available: true })
+    setForm({ name: '', community: '', instrument: '', contact: '', compensationPreference: 'Voluntary service', available: true })
     setError('')
   }
 
@@ -199,6 +200,14 @@ function MusicianSignupPage({ onAdd, musicians }) {
           <Input label="Home community" value={form.community} onChange={(e) => update('community', e.target.value)} />
           <Input label="Instrument / voice" placeholder="e.g. 🎸 Guitar" value={form.instrument} onChange={(e) => update('instrument', e.target.value)} />
           <Input label="Contact" placeholder="email or phone" value={form.contact} onChange={(e) => update('contact', e.target.value)} />
+          <label className="stack left small">
+            Compensation preference
+            <select value={form.compensationPreference} onChange={(e) => update('compensationPreference', e.target.value)}>
+              <option>Voluntary service</option>
+              <option>Open to honorarium</option>
+              <option>Professional rate</option>
+            </select>
+          </label>
           <label className="check-row">
             <input type="checkbox" checked={form.available} onChange={(e) => update('available', e.target.checked)} />
             Available for upcoming Feasts

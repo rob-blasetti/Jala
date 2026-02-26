@@ -162,6 +162,7 @@ h1, h2 { margin: 0; }
 
 .form input,
 .form textarea,
+.form select,
 .form button,
 .bottom-nav button,
 .cta {

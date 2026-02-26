@@ -48,6 +48,7 @@ const toApi = (table, row = {}) => {
       community: row.community,
       instrument: row.instrument,
       contact: row.contact,
+      compensationPreference: row.compensation_preference,
       available: row.available,
       performances: row.performances,
       createdAt: row.created_at,
@@ -94,6 +95,7 @@ const fromApi = (table, payload = {}) => {
       community: payload.community,
       instrument: payload.instrument,
       contact: payload.contact,
+      compensation_preference: payload.compensationPreference,
       available: payload.available,
       performances: payload.performances,
     }

@@ -9,11 +9,15 @@ create table if not exists public.musicians (
   community text not null,
   instrument text not null,
   contact text not null,
+  compensation_preference text not null default 'Voluntary service',
   available boolean not null default true,
   performances integer not null default 0,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table if exists public.musicians
+  add column if not exists compensation_preference text not null default 'Voluntary service';
 
 create table if not exists public.requests (
   id uuid primary key default gen_random_uuid(),
