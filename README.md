@@ -51,12 +51,15 @@ Set these in **Project → Settings → Environment Variables**:
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `STRIPE_SECRET_KEY`
+- `STRIPE_WEBHOOK_SECRET`
 - `VITE_STRIPE_PUBLISHABLE_KEY`
 
 Stripe setup notes:
 - Dynamic amount checkout is enabled (AUD 5–300)
 - A standard 10% platform fee is added during checkout
-- Request status updates to `Paid` after successful session verification
+- Webhook endpoint: `/api/payments/webhook`
+- Request status updates to `Paid` via webhook (`checkout.session.completed`)
+- Fallback client verification remains available via `/api/payments/verify`
 
 ## Data Models
 
