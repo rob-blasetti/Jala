@@ -30,7 +30,7 @@
 
 .app-shell {
   min-height: 100vh;
-  background: linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+  background: var(--bg-top);
   color: var(--text);
 }
 
