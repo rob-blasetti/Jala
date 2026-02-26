@@ -224,12 +224,22 @@ h1, h2 { margin: 0; }
   top: 0;
   z-index: 20;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: 1.15fr repeat(4, minmax(0, 1fr));
   gap: 0.55rem;
+  align-items: center;
   padding: 0.78rem max(0.85rem, env(safe-area-inset-right)) 0.75rem max(0.85rem, env(safe-area-inset-left));
   border-bottom: 1px solid var(--card-border);
   background: rgba(238, 244, 255, 0.95);
   backdrop-filter: blur(6px);
+}
+
+.bottom-nav .brand {
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: #17356f;
+  letter-spacing: 0.01em;
+  text-align: left;
+  padding-left: 0.25rem;
 }
 
 .bottom-nav .active {
@@ -260,6 +270,8 @@ h1, h2 { margin: 0; }
   .card { padding: 0.9rem; }
   .hero-image { height: 240px; object-position: center; }
   .hero-overlay h1 { font-size: 1.9rem; }
+  .bottom-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bottom-nav .brand { grid-column: 1 / -1; padding-left: 0; }
 }
 
 @media (max-width: 380px) {
