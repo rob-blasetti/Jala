@@ -112,7 +112,7 @@ function MusicianSpotlight({ musicians, title = 'Available musicians', onRequest
   )
 }
 
-function HomePage({ musicians, requests, goToMusician, goToRequest, onRequestMusician }) {
+function HomePage({ musicians, requests, onOpenMusicianSignup, goToRequest, onRequestMusician }) {
   const activeMusicians = musicians.filter((m) => m.available).length
   const [heroTitle, setHeroTitle] = useState('Jala')
   const [heroTitleClass, setHeroTitleClass] = useState('')
@@ -165,7 +165,7 @@ function HomePage({ musicians, requests, goToMusician, goToRequest, onRequestMus
         <p className="muted">A warm space for musicians of all kinds to connect with friends nearby and share music at Feast.</p>
 
         <div className="hero-actions">
-          <Button className="cta" onPress={goToMusician} label="I’m a Musician" />
+          <Button className="cta" onPress={onOpenMusicianSignup} label="I’m a Musician" />
           <Button className="cta secondary" secondary onPress={goToRequest} label="Community Envoy Request" />
         </div>
 
@@ -188,7 +188,7 @@ function HomePage({ musicians, requests, goToMusician, goToRequest, onRequestMus
   )
 }
 
-function MusicianSignupPage({ onAdd, musicians }) {
+function MusicianSignupPage({ onAdd, musicians, showSpotlight = true }) {
   const [form, setForm] = useState({ name: '', community: '', instrument: '', contact: '', compensationPreference: 'Voluntary service', available: true })
   const [error, setError] = useState('')
 
@@ -233,7 +233,7 @@ function MusicianSignupPage({ onAdd, musicians }) {
         </form>
       </section>
 
-      <MusicianSpotlight musicians={musicians} />
+      {showSpotlight && <MusicianSpotlight musicians={musicians} />}
     </>
   )
 }
@@ -520,6 +520,7 @@ function App() {
   const [successNotice, setSuccessNotice] = useState('')
   const [errorNotice, setErrorNotice] = useState('')
   const [loading, setLoading] = useState(true)
+  const [showMusicianSignupModal, setShowMusicianSignupModal] = useState(false)
 
   useEffect(() => {
     const load = async () => {
@@ -700,18 +701,13 @@ function App() {
           <HomePage
             musicians={musicians}
             requests={requests}
-            goToMusician={() => navigateToTab('Musicians')}
+            onOpenMusicianSignup={() => setShowMusicianSignupModal(true)}
             goToRequest={() => navigateToTab(REQUEST_TAB)}
             onRequestMusician={requestMusicianByEmail}
           />
         )}
 
-        {tab === 'Musicians' && (
-          <>
-            <MusicianSignupPage onAdd={addMusician} musicians={musicians} />
-            <MusicianRequestsPage requests={requests} />
-          </>
-        )}
+        {tab === 'Musicians' && <MusicianRequestsPage requests={requests} />}
 
         {tab === 'Categories' && <CategoriesPage />}
 
@@ -735,6 +731,21 @@ function App() {
           </>
         )}
       </main>
+
+      {showMusicianSignupModal && (
+        <div className="modal-backdrop" onClick={() => setShowMusicianSignupModal(false)}>
+          <div className="modal-panel" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-head">
+              <h3>Musician Sign-up</h3>
+              <button className="modal-close" onClick={() => setShowMusicianSignupModal(false)}>✕</button>
+            </div>
+            <MusicianSignupPage onAdd={(payload) => {
+              addMusician(payload)
+              setShowMusicianSignupModal(false)
+            }} musicians={musicians} showSpotlight={false} />
+          </div>
+        </div>
+      )}
     </div>
   )
 }
