@@ -97,13 +97,28 @@ function MusicianSpotlight({ musicians, title = 'Available musicians', onRequest
 
 function HomePage({ musicians, requests, goToMusician, goToRequest, onRequestMusician }) {
   const activeMusicians = musicians.filter((m) => m.available).length
+  const [heroTitle, setHeroTitle] = useState('Jala')
+
+  useEffect(() => {
+    const forwardFrames = ['Jala', 'Jalal', 'Jalala']
+    const backwardFrames = ['Jalal', 'Jala']
+    const sequence = [...forwardFrames, ...backwardFrames]
+    let index = 0
+
+    const timer = setInterval(() => {
+      setHeroTitle(sequence[index])
+      index = (index + 1) % sequence.length
+    }, 430)
+
+    return () => clearInterval(timer)
+  }, [])
 
   return (
     <>
       <section className="hero-banner">
         <img src={heroImage} alt="Friends in community making music together" className="hero-image" />
         <div className="hero-overlay">
-          <h1>Jala</h1>
+          <h1 className="typing-title">{heroTitle}<span className="typing-cursor" aria-hidden="true">|</span></h1>
           <p>Connecting musicians and Feast communities through friendship and joyful service.</p>
         </div>
       </section>
