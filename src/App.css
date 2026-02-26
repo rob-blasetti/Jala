@@ -436,6 +436,23 @@ h1, h2 { margin: 0; }
   padding: 0.3rem 0.55rem;
 }
 
+.top-banner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.45rem 0.9rem;
+  background: #0f2b57;
+  color: #e8f1ff;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.top-banner a {
+  color: #9ed0ff;
+  text-decoration: underline;
+}
+
 .bottom-nav {
   position: sticky;
   top: 0;

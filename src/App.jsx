@@ -752,6 +752,11 @@ function App() {
 
   return (
     <div className="app-shell">
+      <div className="top-banner">
+        <span>The second drop</span>
+        <a href="https://liquidspirit.org" target="_blank" rel="noreferrer">liquidspirit.org</a>
+      </div>
+
       <nav className="bottom-nav" aria-label="Primary navigation">
         <button className="brand-button" onClick={() => navigateToTab('Home')}>Jala</button>
         {TABS.map((item) => (
