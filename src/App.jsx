@@ -99,13 +99,14 @@ function HomePage({ musicians, requests, goToMusician, goToRequest, onRequestMus
   const activeMusicians = musicians.filter((m) => m.available).length
   const [heroTitle, setHeroTitle] = useState('Jala')
   const [heroTitleClass, setHeroTitleClass] = useState('')
+  const [heroAnimKey, setHeroAnimKey] = useState(0)
 
   useEffect(() => {
     const sequence = [
-      { text: 'Jala', className: '', wait: 520 },
-      { text: 'Jalalala', className: 'joy-pop', wait: 760 },
-      { text: 'Jalal', className: '', wait: 520 },
-      { text: 'Jala', className: 'fade-in', wait: 680 },
+      { text: 'Jala', className: '', wait: 900 },
+      { text: 'Jalalala', className: 'joy-pop', wait: 1100 },
+      { text: 'Jalal', className: '', wait: 900 },
+      { text: 'Jala', className: 'fade-in', wait: 1350 },
     ]
 
     let cancelled = false
@@ -116,6 +117,7 @@ function HomePage({ musicians, requests, goToMusician, goToRequest, onRequestMus
       const current = sequence[step]
       setHeroTitle(current.text)
       setHeroTitleClass(current.className)
+      setHeroAnimKey((k) => k + 1)
       step = (step + 1) % sequence.length
       timer = setTimeout(() => {
         if (!cancelled) run()
@@ -135,7 +137,7 @@ function HomePage({ musicians, requests, goToMusician, goToRequest, onRequestMus
       <section className="hero-banner">
         <img src={heroImage} alt="Friends in community making music together" className="hero-image" />
         <div className="hero-overlay">
-          <h1 className={`typing-title ${heroTitleClass}`}>{heroTitle}<span className="typing-cursor" aria-hidden="true">|</span></h1>
+          <h1 key={heroAnimKey} className={`typing-title ${heroTitleClass}`}>{heroTitle}<span className="typing-cursor" aria-hidden="true">|</span></h1>
           <p>Connecting musicians and Feast communities through friendship and joyful service.</p>
         </div>
       </section>

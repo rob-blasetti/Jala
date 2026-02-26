@@ -88,7 +88,7 @@
 .typing-title { display: inline-flex; align-items: center; gap: 0.08rem; transition: transform 220ms ease, opacity 220ms ease; }
 .typing-cursor { animation: blink 1s steps(1) infinite; opacity: 0.95; }
 .typing-title.joy-pop { animation: joyPop 520ms ease; }
-.typing-title.fade-in { animation: softFadeIn 420ms ease; }
+.typing-title.fade-in { animation: softFadeIn 900ms ease; }
 
 @keyframes blink {
   0%, 49% { opacity: 1; }
