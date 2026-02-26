@@ -4,7 +4,7 @@ import heroImage from './assets/hero-jala.jpg'
 import { api } from './lib/api'
 import './App.css'
 
-const TABS = ['Musicians', 'Community']
+const TABS = ['Home', 'Musicians', 'Community']
 const REQUEST_TAB = 'Request a Musician'
 
 const SAMPLE_MUSICIANS = [
@@ -323,7 +323,7 @@ function CommitteeReviewPage({ requests, musicians, responses, acceptedByRequest
 }
 
 function App() {
-  const [tab, setTab] = useState('Community')
+  const [tab, setTab] = useState('Home')
   const [musicians, setMusicians] = useState([])
   const [requests, setRequests] = useState([])
   const [responses, setResponses] = useState([])
@@ -413,10 +413,30 @@ function App() {
 
   return (
     <div className="app-shell">
+      <nav className="bottom-nav" aria-label="Primary navigation">
+        {TABS.map((item) => (
+          <button key={item} className={tab === item ? 'active' : ''} onClick={() => setTab(item)}>
+            {item}
+          </button>
+        ))}
+        <button className={`request-cta ${tab === REQUEST_TAB ? 'active' : ''}`} onClick={() => setTab(REQUEST_TAB)}>
+          Request a Musician
+        </button>
+      </nav>
+
       <main className="page">
         {loading && <p className="muted">Loading data…</p>}
         {successNotice && <p className="success-banner">{successNotice}</p>}
         {errorNotice && <p className="error-note">{errorNotice}</p>}
+
+        {tab === 'Home' && (
+          <HomePage
+            musicians={musicians}
+            requests={requests}
+            goToMusician={() => setTab('Musicians')}
+            goToRequest={() => setTab(REQUEST_TAB)}
+          />
+        )}
 
         {tab === 'Musicians' && (
           <>
@@ -427,12 +447,6 @@ function App() {
 
         {tab === 'Community' && (
           <>
-            <HomePage
-              musicians={musicians}
-              requests={requests}
-              goToMusician={() => setTab('Musicians')}
-              goToRequest={() => setTab(REQUEST_TAB)}
-            />
             <RequestBoard requests={requests} musicians={musicians} />
             <CommitteeReviewPage
               requests={requests}
@@ -451,17 +465,6 @@ function App() {
           </>
         )}
       </main>
-
-      <nav className="bottom-nav" aria-label="Primary navigation">
-        {TABS.map((item) => (
-          <button key={item} className={tab === item ? 'active' : ''} onClick={() => setTab(item)}>
-            {item}
-          </button>
-        ))}
-        <button className={`request-cta ${tab === REQUEST_TAB ? 'active' : ''}`} onClick={() => setTab(REQUEST_TAB)}>
-          Request a Musician
-        </button>
-      </nav>
     </div>
   )
 }
