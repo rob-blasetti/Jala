@@ -181,6 +181,7 @@ h1, h2 { margin: 0; }
 
 .hero-actions { display: grid; gap: 0.65rem; }
 .filter-row { margin: 0.25rem 0 0.5rem; }
+.split-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
 .cta { background: var(--primary); border-color: var(--primary-strong); color: var(--primary-text); font-weight: 700; }
 .cta.secondary { background: var(--secondary); border-color: var(--secondary-border); color: #1e3a70; }
 
@@ -220,18 +221,18 @@ h1, h2 { margin: 0; }
 
 .musician-card {
   display: grid;
-  grid-template-columns: 44px 1fr;
-  gap: 0.7rem;
-  align-items: center;
+  grid-template-columns: 52px 1fr;
+  gap: 0.75rem;
+  align-items: start;
   background: #f9fbff;
   border: 1px solid var(--card-border);
   border-radius: 10px;
-  padding: 0.68rem;
+  padding: 0.72rem;
 }
 
 .avatar-wrap {
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   border-radius: 999px;
   overflow: hidden;
   border: 1px solid var(--card-border);
@@ -242,10 +243,39 @@ h1, h2 { margin: 0; }
   font-weight: 700;
 }
 
+.musician-main { display: grid; gap: 0.35rem; }
+
 .musician-head { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+
+.community-chip {
+  border: 1px solid var(--secondary-border);
+  background: #eef4ff;
+  color: #294a84;
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.74rem;
+  white-space: nowrap;
+}
+
+.musician-meta-row { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
 .star { font-size: 0.85rem; color: var(--star); white-space: nowrap; }
 
-.request-inline-wrap { margin-top: 0.55rem; }
+.musician-bio {
+  margin: 0.15rem 0 0;
+  color: #304664;
+  font-size: 0.88rem;
+  line-height: 1.35;
+}
+
+.musician-footer {
+  margin-top: 0.25rem;
+  padding-top: 0.45rem;
+  border-top: 1px solid var(--card-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
 
 .mini-request-btn {
   border: 1px solid var(--secondary-border);

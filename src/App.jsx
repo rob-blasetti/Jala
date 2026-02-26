@@ -25,9 +25,9 @@ const pathToTab = (path) => {
 }
 
 const SAMPLE_MUSICIANS = [
-  { id: 's1', name: 'Aaliyah', community: 'Northside', instrument: '🎻 Violin', contact: 'aaliyah@example.com', available: true, performances: 12, compensationPreference: 'Open to honorarium' },
-  { id: 's2', name: 'Sam', community: 'West End', instrument: '🎸 Guitar', contact: 'sam@example.com', available: true, performances: 8, compensationPreference: 'Voluntary service' },
-  { id: 's3', name: 'Noah', community: 'Riverdale', instrument: '🥁 Drums', contact: 'noah@example.com', available: false, performances: 5, compensationPreference: 'Professional rate' },
+  { id: 's1', name: 'Aaliyah', community: 'Northside', city: 'Melbourne', country: 'Australia', musicCategory: 'Strings', instrument: '🎻 Violin', bio: 'I love reflective devotional pieces for Feast gatherings.', contact: 'aaliyah@example.com', available: true, performances: 12, compensationPreference: 'Open to honorarium' },
+  { id: 's2', name: 'Sam', community: 'West End', city: 'Sydney', country: 'Australia', musicCategory: 'Strings', instrument: '🎸 Guitar', bio: 'Warm acoustic style, ideal for opening songs.', contact: 'sam@example.com', available: true, performances: 8, compensationPreference: 'Voluntary service' },
+  { id: 's3', name: 'Noah', community: 'Riverdale', city: 'Brisbane', country: 'Australia', musicCategory: 'Rhythm & Percussion', instrument: '🥁 Drums', bio: 'Light rhythmic support for joyful gatherings.', contact: 'noah@example.com', available: false, performances: 5, compensationPreference: 'Professional rate' },
 ]
 
 const SAMPLE_REQUESTS = [
@@ -40,6 +40,10 @@ const SAMPLE_RESPONSES = [
   { id: 'rsp2', requestId: 'r1', musicianId: 's2', message: 'Available and can bring guitar + vocals.' },
   { id: 'rsp3', requestId: 'r2', musicianId: 's2', message: 'I can do a welcoming upbeat opening song.' },
 ]
+
+function CommunityChip({ label }) {
+  return <span className="community-chip">{label || 'Community'}</span>
+}
 
 function MusicianCard({ musician, showContact = false, onRequest }) {
   const initial = musician.name?.[0]?.toUpperCase() || '🎵'
@@ -62,35 +66,47 @@ function MusicianCard({ musician, showContact = false, onRequest }) {
     setRequestDetails({ requesterName: '', contactEmail: '', eventType: '', eventDate: '', notes: '' })
   }
 
+  const location = [musician.city, musician.country].filter(Boolean).join(', ') || musician.community
+  const category = musician.musicCategory || 'General'
+
   return (
     <article className="musician-card">
       <div className="avatar-wrap" aria-hidden="true">{initial}</div>
-      <div>
+
+      <div className="musician-main">
         <div className="musician-head">
           <strong>{musician.name}</strong>
+          <CommunityChip label={musician.community} />
+        </div>
+
+        <div className="muted">{category} · {musician.instrument}</div>
+
+        <div className="musician-meta-row">
+          <span className="muted small">📍 {location}</span>
           <span className="star">⭐ {musician.performances ?? 0}</span>
         </div>
-        <div className="muted">{musician.instrument} · {musician.community}</div>
-        {musician.compensationPreference && <div className="muted small">💳 {musician.compensationPreference}</div>}
+
+        {musician.bio && <p className="musician-bio">{musician.bio}</p>}
         {showContact && <div className="muted small">📬 {musician.contact}</div>}
 
-        {onRequest && (
-          <div className="request-inline-wrap">
+        <div className="musician-footer">
+          <span className="muted small">💳 {musician.compensationPreference || 'Voluntary service'}</span>
+          {onRequest && (
             <button className="mini-request-btn" onClick={() => setShowRequestForm((v) => !v)}>
-              {showRequestForm ? 'Cancel' : 'Request this Musician'}
+              {showRequestForm ? 'Cancel' : 'Request'}
             </button>
+          )}
+        </div>
 
-            {showRequestForm && (
-              <form className="mini-request-form" onSubmit={submitRequest}>
-                <Input label="Your name" value={requestDetails.requesterName} onChange={(e) => updateRequest('requesterName', e.target.value)} />
-                <Input label="Your email" type="email" value={requestDetails.contactEmail} onChange={(e) => updateRequest('contactEmail', e.target.value)} />
-                <Input label="Occasion" placeholder="Feast or Holy Day" value={requestDetails.eventType} onChange={(e) => updateRequest('eventType', e.target.value)} />
-                <Input label="Date" type="date" value={requestDetails.eventDate} onChange={(e) => updateRequest('eventDate', e.target.value)} />
-                <TextArea label="Message" value={requestDetails.notes} onChange={(e) => updateRequest('notes', e.target.value)} />
-                <button type="submit" className="mini-request-submit">Send request email</button>
-              </form>
-            )}
-          </div>
+        {onRequest && showRequestForm && (
+          <form className="mini-request-form" onSubmit={submitRequest}>
+            <Input label="Your name" value={requestDetails.requesterName} onChange={(e) => updateRequest('requesterName', e.target.value)} />
+            <Input label="Your email" type="email" value={requestDetails.contactEmail} onChange={(e) => updateRequest('contactEmail', e.target.value)} />
+            <Input label="Occasion" placeholder="Feast or Holy Day" value={requestDetails.eventType} onChange={(e) => updateRequest('eventType', e.target.value)} />
+            <Input label="Date" type="date" value={requestDetails.eventDate} onChange={(e) => updateRequest('eventDate', e.target.value)} />
+            <TextArea label="Message" value={requestDetails.notes} onChange={(e) => updateRequest('notes', e.target.value)} />
+            <button type="submit" className="mini-request-submit">Send request email</button>
+          </form>
         )}
       </div>
     </article>
@@ -190,7 +206,7 @@ function HomePage({ musicians, requests, onOpenMusicianSignup, goToRequest, onRe
 }
 
 function MusicianSignupPage({ onAdd, musicians, showSpotlight = true }) {
-  const [form, setForm] = useState({ name: '', community: '', instrument: '', contact: '', compensationPreference: 'Voluntary service', available: true })
+  const [form, setForm] = useState({ name: '', community: '', city: '', country: 'Australia', musicCategory: 'Singing & Vocals', instrument: '', bio: '', contact: '', compensationPreference: 'Voluntary service', available: true })
   const [error, setError] = useState('')
 
   const update = (key, value) => setForm((f) => ({ ...f, [key]: value }))
@@ -203,7 +219,7 @@ function MusicianSignupPage({ onAdd, musicians, showSpotlight = true }) {
     }
 
     onAdd(form)
-    setForm({ name: '', community: '', instrument: '', contact: '', compensationPreference: 'Voluntary service', available: true })
+    setForm({ name: '', community: '', city: '', country: 'Australia', musicCategory: 'Singing & Vocals', instrument: '', bio: '', contact: '', compensationPreference: 'Voluntary service', available: true })
     setError('')
   }
 
@@ -215,7 +231,23 @@ function MusicianSignupPage({ onAdd, musicians, showSpotlight = true }) {
         <form className="form stack" onSubmit={submit}>
           <Input label="Full name" value={form.name} onChange={(e) => update('name', e.target.value)} />
           <Input label="Home community" value={form.community} onChange={(e) => update('community', e.target.value)} />
+          <div className="split-row">
+            <Input label="City" placeholder="Melbourne" value={form.city} onChange={(e) => update('city', e.target.value)} />
+            <Input label="Country" value={form.country} onChange={(e) => update('country', e.target.value)} />
+          </div>
+          <label className="stack left small">
+            Music category
+            <select value={form.musicCategory} onChange={(e) => update('musicCategory', e.target.value)}>
+              <option>Singing & Vocals</option>
+              <option>Strings</option>
+              <option>Keys & Piano</option>
+              <option>Rhythm & Percussion</option>
+              <option>Wind & Brass</option>
+              <option>Other</option>
+            </select>
+          </label>
           <Input label="Instrument / voice" placeholder="e.g. 🎸 Guitar" value={form.instrument} onChange={(e) => update('instrument', e.target.value)} />
+          <TextArea label="Short bio (optional)" value={form.bio} onChange={(e) => update('bio', e.target.value)} />
           <Input label="Contact" placeholder="email or phone" value={form.contact} onChange={(e) => update('contact', e.target.value)} />
           <label className="stack left small">
             Compensation preference

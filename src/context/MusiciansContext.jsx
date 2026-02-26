@@ -8,7 +8,8 @@ const MusiciansContext = createContext({
   loading: false,
 })
 
-const getCategory = (instrument = '') => {
+const getCategory = (instrument = '', musicCategory = '') => {
+  if (musicCategory) return musicCategory
   const value = instrument.toLowerCase()
   if (/(voice|vocal|sing|choir)/.test(value)) return 'Singing & Vocals'
   if (/(guitar|violin|cello|ukulele|string)/.test(value)) return 'Strings'
@@ -56,7 +57,7 @@ export function MusiciansProvider({ children }) {
     }
 
     for (const musician of musicians) {
-      const category = getCategory(musician.instrument)
+      const category = getCategory(musician.instrument, musician.musicCategory)
       bucket[category].push(musician)
     }
 

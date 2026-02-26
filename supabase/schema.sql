@@ -7,7 +7,11 @@ create table if not exists public.musicians (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   community text not null,
+  city text,
+  country text,
+  music_category text,
   instrument text not null,
+  bio text,
   contact text not null,
   compensation_preference text not null default 'Voluntary service',
   available boolean not null default true,
@@ -16,8 +20,11 @@ create table if not exists public.musicians (
   updated_at timestamptz not null default now()
 );
 
-alter table if exists public.musicians
-  add column if not exists compensation_preference text not null default 'Voluntary service';
+alter table if exists public.musicians add column if not exists city text;
+alter table if exists public.musicians add column if not exists country text;
+alter table if exists public.musicians add column if not exists music_category text;
+alter table if exists public.musicians add column if not exists bio text;
+alter table if exists public.musicians add column if not exists compensation_preference text not null default 'Voluntary service';
 
 create table if not exists public.requests (
   id uuid primary key default gen_random_uuid(),
