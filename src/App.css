@@ -453,66 +453,59 @@ h1, h2 { margin: 0; }
   text-decoration: underline;
 }
 
-.bottom-nav {
+.top-nav {
   position: sticky;
   top: 0;
   z-index: 20;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.7rem;
-  width: min(1120px, calc(100% - 2.8rem));
-  margin: 0 auto;
-  padding: 0.78rem 0.95rem 0.75rem;
   border-bottom: 1px solid var(--card-border);
   background: rgba(238, 244, 255, 0.95);
   backdrop-filter: blur(6px);
 }
 
-.bottom-nav .brand-button {
-  font-weight: 800;
-  font-size: 1.05rem;
-  color: #17356f;
-  letter-spacing: 0.01em;
-  text-align: left;
-  padding-left: 0.25rem;
-  background: transparent;
-  border: none;
-  cursor: pointer;
+.top-nav-inner {
+  width: min(1120px, calc(100% - 2.8rem));
+  margin: 0 auto;
+  padding: 0.72rem 0.95rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
 }
 
-.bottom-nav .active {
+.nav-text {
+  background: transparent;
+  border: none;
+  color: #294a84;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.2rem 0.3rem;
+}
+
+.nav-text.brand {
+  font-weight: 800;
+  color: #17356f;
+}
+
+.nav-text.active {
   color: #1d3f7f;
   text-decoration: underline;
   text-underline-offset: 4px;
 }
 
-.bottom-nav button {
-  font-size: 0.85rem;
-  line-height: 1.2;
-  min-height: 40px;
-  background: transparent;
-  border: none;
-  color: #294a84;
-  cursor: pointer;
-}
-
-.bottom-nav .request-cta {
+.nav-cta {
   background: var(--primary);
   border: 1px solid var(--primary-strong);
   color: var(--primary-text);
   font-weight: 700;
   border-radius: 999px;
   padding: 0.45rem 0.9rem;
-  min-height: 40px;
-  text-decoration: none;
+  cursor: pointer;
 }
 
-.bottom-nav .request-cta.active {
+.nav-cta.active {
   background: var(--primary-strong);
   border-color: var(--primary-strong);
-  color: #ffffff;
-  text-decoration: none;
 }
 
 @media (max-width: 820px) {
@@ -521,13 +514,10 @@ h1, h2 { margin: 0; }
   .card { padding: 0.9rem; }
   .hero-image { height: 240px; object-position: center; }
   .hero-overlay h1 { font-size: 1.9rem; }
-  .bottom-nav {
-    flex-wrap: wrap;
-    justify-content: center;
+  .top-nav-inner {
     width: calc(100% - 1.9rem);
     padding: 0.65rem 0.6rem;
   }
-  .bottom-nav .brand-button { padding-left: 0; }
 }
 
 @media (min-width: 980px) {
