@@ -457,10 +457,10 @@ h1, h2 { margin: 0; }
   position: sticky;
   top: 0;
   z-index: 20;
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 0.55rem;
+  display: flex;
+  justify-content: center;
   align-items: center;
+  gap: 0.7rem;
   width: min(1120px, calc(100% - 2.8rem));
   margin: 0 auto;
   padding: 0.78rem 0.95rem 0.75rem;
@@ -522,11 +522,12 @@ h1, h2 { margin: 0; }
   .hero-image { height: 240px; object-position: center; }
   .hero-overlay h1 { font-size: 1.9rem; }
   .bottom-nav {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    flex-wrap: wrap;
+    justify-content: center;
     width: calc(100% - 1.9rem);
     padding: 0.65rem 0.6rem;
   }
-  .bottom-nav .brand-button { grid-column: 1 / -1; padding-left: 0; }
+  .bottom-nav .brand-button { padding-left: 0; }
 }
 
 @media (min-width: 980px) {
