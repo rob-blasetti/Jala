@@ -453,7 +453,7 @@ function BrowseMusiciansPage({ musicians, onRequestMusician }) {
       ) : (
         <div className="stack">
           {filtered.map((musician) => (
-            <MusicianCard key={musician.id} musician={musician} onRequest={onRequestMusician} showContact />
+            <MusicianCard key={musician.id} musician={musician} onRequest={onRequestMusician} />
           ))}
         </div>
       )}
@@ -525,6 +525,8 @@ function AdminDashboardPage({ musicians, requests }) {
 
 function CategoriesPage({ onRequestMusician }) {
   const { categorized, loading } = useMusiciansContext()
+  const [availabilityFilter, setAvailabilityFilter] = useState('Available')
+  const [compFilter, setCompFilter] = useState('All')
 
   const categories = [
     'Singing & Vocals',
@@ -535,16 +537,45 @@ function CategoriesPage({ onRequestMusician }) {
     'Other',
   ]
 
+  const filterMembers = (members) =>
+    members.filter((m) => {
+      const matchesAvailability = availabilityFilter === 'All' || (availabilityFilter === 'Available' ? m.available : !m.available)
+      const matchesComp = compFilter === 'All' || m.compensationPreference === compFilter
+      return matchesAvailability && matchesComp
+    })
+
   return (
     <section className="card left">
       <h2>Music Categories</h2>
       <p className="muted small">Browse musicians grouped by instrument and style category.</p>
+
+      <div className="categories-filters">
+        <label className="stack left small">
+          Availability
+          <select value={availabilityFilter} onChange={(e) => setAvailabilityFilter(e.target.value)}>
+            <option>Available</option>
+            <option>Unavailable</option>
+            <option>All</option>
+          </select>
+        </label>
+
+        <label className="stack left small">
+          Compensation
+          <select value={compFilter} onChange={(e) => setCompFilter(e.target.value)}>
+            <option>All</option>
+            <option>Voluntary service</option>
+            <option>Open to honorarium</option>
+            <option>Professional rate</option>
+          </select>
+        </label>
+      </div>
+
       {loading ? (
         <p className="muted">Loading musician categories…</p>
       ) : (
         <div className="categories-stack">
           {categories.map((title) => {
-            const members = categorized[title] || []
+            const members = filterMembers(categorized[title] || [])
             if (!members.length) return null
 
             return (
@@ -557,7 +588,7 @@ function CategoriesPage({ onRequestMusician }) {
                 <div className="category-carousel" role="region" aria-label={`${title} musicians`}>
                   {members.map((musician) => (
                     <div key={musician.id} className="category-card-item">
-                      <MusicianCard musician={musician} onRequest={onRequestMusician} showContact />
+                      <MusicianCard musician={musician} onRequest={onRequestMusician} />
                     </div>
                   ))}
                 </div>
