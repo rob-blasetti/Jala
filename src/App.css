@@ -474,7 +474,7 @@ h1, h2 { margin: 0; }
 
 .top-nav-center {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   gap: 0.8rem;
   flex-wrap: wrap;
@@ -491,6 +491,7 @@ h1, h2 { margin: 0; }
 
 .nav-text.brand {
   font-weight: 800;
+  font-size: 1.08rem;
   color: #17356f;
   justify-self: start;
 }
