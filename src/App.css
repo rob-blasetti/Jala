@@ -466,6 +466,13 @@ h1, h2 { margin: 0; }
   width: min(1120px, calc(100% - 2.8rem));
   margin: 0 auto;
   padding: 0.72rem 0.95rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.top-nav-center {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -485,6 +492,7 @@ h1, h2 { margin: 0; }
 .nav-text.brand {
   font-weight: 800;
   color: #17356f;
+  justify-self: start;
 }
 
 .nav-text.active {
@@ -517,6 +525,10 @@ h1, h2 { margin: 0; }
   .top-nav-inner {
     width: calc(100% - 1.9rem);
     padding: 0.65rem 0.6rem;
+    grid-template-columns: 1fr;
+  }
+  .top-nav-center {
+    justify-content: center;
   }
 }
 

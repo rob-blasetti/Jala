@@ -667,14 +667,16 @@ function App() {
       <nav className="top-nav" aria-label="Primary navigation">
         <div className="top-nav-inner">
           <button className="nav-text brand" onClick={() => navigateToTab('Home')}>Jala</button>
-          {TABS.map((item) => (
-            <button key={item} className={`nav-text ${tab === item ? 'active' : ''}`} onClick={() => navigateToTab(item)}>
-              {item}
+          <div className="top-nav-center">
+            {TABS.map((item) => (
+              <button key={item} className={`nav-text ${tab === item ? 'active' : ''}`} onClick={() => navigateToTab(item)}>
+                {item}
+              </button>
+            ))}
+            <button className={`nav-cta ${tab === REQUEST_TAB ? 'active' : ''}`} onClick={() => navigateToTab(REQUEST_TAB)}>
+              Request A Performance
             </button>
-          ))}
-          <button className={`nav-cta ${tab === REQUEST_TAB ? 'active' : ''}`} onClick={() => navigateToTab(REQUEST_TAB)}>
-            Request A Performance
-          </button>
+          </div>
         </div>
       </nav>
 
