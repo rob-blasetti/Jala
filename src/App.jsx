@@ -3,6 +3,8 @@ import { Button, Input, TextArea } from 'liquid-spirit-styleguide/ui-primitives/
 import heroImage from './assets/hero-jala.jpg'
 import { api } from './lib/api'
 import { useMusiciansContext } from './context/MusiciansContext'
+import { useTabRouter } from './hooks/useTabRouter'
+import { useJalaData } from './hooks/useJalaData'
 import './App.css'
 
 const TABS = ['Home', 'Musicians', 'Categories', 'Community']
@@ -633,172 +635,27 @@ function CommitteeReviewPage({ requests, musicians, responses, acceptedByRequest
 }
 
 function App() {
-  const [tab, setTab] = useState(() => pathToTab(window.location.pathname))
-  const [musicians, setMusicians] = useState([])
-  const [requests, setRequests] = useState([])
-  const [responses, setResponses] = useState([])
-  const [acceptedByRequest, setAcceptedByRequest] = useState({})
-
-  const [successNotice, setSuccessNotice] = useState('')
-  const [errorNotice, setErrorNotice] = useState('')
-  const [loading, setLoading] = useState(true)
   const [showMusicianSignupModal, setShowMusicianSignupModal] = useState(false)
+  const { tab, navigateToTab } = useTabRouter({ pathToTab, tabToPath })
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        setLoading(true)
-        const [musiciansData, requestsData, responsesData, matchesData] = await Promise.all([
-          api.getMusicians(),
-          api.getRequests(),
-          api.getResponses(),
-          api.getMatches(),
-        ])
-
-        setMusicians(musiciansData.length ? musiciansData : SAMPLE_MUSICIANS)
-        setRequests(requestsData.length ? requestsData : SAMPLE_REQUESTS)
-        setResponses(responsesData.length ? responsesData : SAMPLE_RESPONSES)
-
-        const nextMatches = {}
-        for (const match of matchesData) nextMatches[match.requestId] = match.musicianId
-        setAcceptedByRequest(nextMatches)
-      } catch (error) {
-        setMusicians(SAMPLE_MUSICIANS)
-        setRequests(SAMPLE_REQUESTS)
-        setResponses(SAMPLE_RESPONSES)
-        setErrorNotice(`Sheet API unavailable. Showing fallback data. ${error.message}`)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    load()
-  }, [])
-
-  const navigateToTab = (nextTab) => {
-    setTab(nextTab)
-    const nextPath = tabToPath(nextTab)
-    if (window.location.pathname !== nextPath) {
-      window.history.pushState({}, '', nextPath)
-    }
-  }
-
-  useEffect(() => {
-    const onPopState = () => setTab(pathToTab(window.location.pathname))
-    window.addEventListener('popstate', onPopState)
-    return () => window.removeEventListener('popstate', onPopState)
-  }, [])
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const payment = params.get('payment')
-    const sessionId = params.get('session_id')
-
-    if (payment === 'success' && sessionId) {
-      api
-        .verifyCheckoutSession({ sessionId })
-        .then((result) => {
-          if (result.paid) {
-            setRequests((prev) => prev.map((r) => (r.id === result.requestId ? { ...r, status: 'Paid' } : r)))
-            setSuccessNotice('Payment confirmed. Your request is now marked Paid.')
-          } else {
-            setSuccessNotice('Payment completed. Verification is still processing.')
-          }
-        })
-        .catch((error) => setErrorNotice(`Could not verify payment: ${error.message}`))
-        .finally(() => {
-          const cleanUrl = window.location.pathname
-          window.history.replaceState({}, '', cleanUrl)
-        })
-    }
-
-    if (payment === 'cancel') {
-      setErrorNotice('Payment was cancelled. You can try again anytime.')
-      const cleanUrl = window.location.pathname
-      window.history.replaceState({}, '', cleanUrl)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (!successNotice && !errorNotice) return
-    const timer = setTimeout(() => {
-      setSuccessNotice('')
-      setErrorNotice('')
-    }, 3500)
-    return () => clearTimeout(timer)
-  }, [successNotice, errorNotice])
-
-  const addMusician = async (payload) => {
-    try {
-      const created = await api.createMusician({ ...payload, performances: 0 })
-      setMusicians((prev) => [created, ...prev])
-      setSuccessNotice('Musician profile added.')
-    } catch (error) {
-      setErrorNotice(`Could not save musician: ${error.message}`)
-    }
-  }
-
-  const addRequest = async (payload) => {
-    try {
-      const created = await api.createRequest({ ...payload, status: 'Open' })
-      setRequests((prev) => [created, ...prev])
-
-      const checkout = await api.createCheckoutSession({
-        requestId: created.id,
-        committee: created.committee,
-        needs: created.needs,
-        amountAud: payload.amountAud,
-      })
-
-      if (checkout?.url) {
-        window.location.href = checkout.url
-        return
-      }
-
-      setSuccessNotice('Feast request submitted.')
-    } catch (error) {
-      setErrorNotice(`Could not save request: ${error.message}`)
-    }
-  }
-
-  const requestMusicianByEmail = (musician, details) => {
-    if (!musician?.contact || !String(musician.contact).includes('@')) {
-      setErrorNotice('This musician does not have a valid email contact yet.')
-      return
-    }
-
-    const subject = encodeURIComponent(`Music request for upcoming ${details.eventType || 'Feast/Holy Day'}`)
-    const body = encodeURIComponent(
-      `Hi ${musician.name},\n\n` +
-        `I'd love to request your music support for an upcoming ${details.eventType || 'Feast/Holy Day'}.\n\n` +
-        `Date: ${details.eventDate || 'TBC'}\n` +
-        `From: ${details.requesterName || 'Community member'}\n` +
-        `Contact: ${details.contactEmail || 'Not provided'}\n\n` +
-        `Details:\n${details.notes || 'No additional notes'}\n\n` +
-        `Blessings,`
-    )
-
-    window.location.href = `mailto:${musician.contact}?subject=${subject}&body=${body}`
-    setSuccessNotice(`Email draft opened for ${musician.name}.`)
-  }
-
-  const acceptMusician = async (requestId, musicianId) => {
-    try {
-      const existingMatch = Object.entries(acceptedByRequest).find(([rid]) => rid === requestId)
-      if (existingMatch) {
-        await api.patchMatch({ id: requestId, requestId, musicianId })
-      } else {
-        await api.createMatch({ id: requestId, requestId, musicianId })
-      }
-
-      await api.patchRequest({ id: requestId, status: 'Confirmed' })
-      setAcceptedByRequest((prev) => ({ ...prev, [requestId]: musicianId }))
-      setRequests((prev) => prev.map((r) => (r.id === requestId ? { ...r, status: 'Confirmed' } : r)))
-      setSuccessNotice('Musician confirmed for request.')
-    } catch (error) {
-      setErrorNotice(`Could not confirm musician: ${error.message}`)
-    }
-  }
+  const {
+    musicians,
+    requests,
+    responses,
+    acceptedByRequest,
+    loading,
+    successNotice,
+    errorNotice,
+    addMusician,
+    addRequest,
+    requestMusicianByEmail,
+    acceptMusician,
+  } = useJalaData({
+    api,
+    sampleMusicians: SAMPLE_MUSICIANS,
+    sampleRequests: SAMPLE_REQUESTS,
+    sampleResponses: SAMPLE_RESPONSES,
+  })
 
   return (
     <div className="app-shell">
@@ -858,8 +715,6 @@ function App() {
           </>
         )}
 
-        {tab === 'Admin' && <AdminDashboardPage musicians={musicians} requests={requests} />}
-
         {tab === REQUEST_TAB && (
           <>
             <FeastRequestPage onAdd={addRequest} />
@@ -875,10 +730,14 @@ function App() {
               <h3>Musician Sign-up</h3>
               <button className="modal-close" onClick={() => setShowMusicianSignupModal(false)}>✕</button>
             </div>
-            <MusicianSignupPage onAdd={(payload) => {
-              addMusician(payload)
-              setShowMusicianSignupModal(false)
-            }} musicians={musicians} showSpotlight={false} />
+            <MusicianSignupPage
+              onAdd={(payload) => {
+                addMusician(payload)
+                setShowMusicianSignupModal(false)
+              }}
+              musicians={musicians}
+              showSpotlight={false}
+            />
           </div>
         </div>
       )}
