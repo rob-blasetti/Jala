@@ -10,6 +10,7 @@ import './App.css'
 const TABS = ['Home', 'Musicians', 'Categories', 'Community']
 const REQUEST_TAB = 'Community Envoy Request'
 const EXPLAINER_TAB = 'Explainer'
+const APP_VERSION = '0.10.0'
 
 const tabToPath = (tab) => {
   if (tab === 'Musicians') return '/browse'
@@ -192,6 +193,7 @@ function HomePage({ musicians, requests, onOpenMusicianSignup, onOpenExplainer, 
             </div>
           </div>
           <h1 key={heroAnimKey} className={`typing-title ${heroTitleClass}`}>{heroTitle}<span className="typing-cursor" aria-hidden="true">|</span></h1>
+          <span className="welcome-version">v{APP_VERSION}</span>
           <p>The ocean is calling all musicians and artists.</p>
           <div className="hero-inline-actions">
             <button className="hero-inline-btn primary" onClick={onOpenMusicianSignup}>Sign up Musician</button>

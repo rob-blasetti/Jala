@@ -86,6 +86,16 @@
 }
 
 .typing-title { display: inline-flex; align-items: center; gap: 0.08rem; transition: transform 220ms ease, opacity 220ms ease; }
+.welcome-version {
+  margin-top: 0.35rem;
+  display: inline-block;
+  font-size: 0.78rem;
+  color: #dbe8ff;
+  border: 1px solid rgba(219, 232, 255, 0.45);
+  background: rgba(11, 33, 66, 0.35);
+  border-radius: 999px;
+  padding: 0.1rem 0.45rem;
+}
 .typing-cursor { animation: blink 1s steps(1) infinite; opacity: 0.95; }
 .typing-title.joy-pop { animation: joyPop 520ms ease; }
 .typing-title.fade-in { animation: softFadeIn 900ms ease; }
