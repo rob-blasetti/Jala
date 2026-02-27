@@ -523,7 +523,7 @@ function AdminDashboardPage({ musicians, requests }) {
   )
 }
 
-function CategoriesPage() {
+function CategoriesPage({ onRequestMusician }) {
   const { categorized, loading } = useMusiciansContext()
 
   const categories = [
@@ -542,22 +542,26 @@ function CategoriesPage() {
       {loading ? (
         <p className="muted">Loading musician categories…</p>
       ) : (
-        <div className="categories-grid">
+        <div className="categories-stack">
           {categories.map((title) => {
             const members = categorized[title] || []
+            if (!members.length) return null
+
             return (
-              <article key={title} className="category-card">
-                <h3>{title} <span className="muted small">({members.length})</span></h3>
-                {!members.length ? (
-                  <p className="muted small">No musicians yet.</p>
-                ) : (
-                  <ul>
-                    {members.map((musician) => (
-                      <li key={musician.id}>{musician.name} — {musician.instrument}</li>
-                    ))}
-                  </ul>
-                )}
-              </article>
+              <section key={title} className="category-section">
+                <div className="category-header-row">
+                  <h3>{title}</h3>
+                  <span className="muted small">{members.length} musician{members.length === 1 ? '' : 's'}</span>
+                </div>
+
+                <div className="category-carousel" role="region" aria-label={`${title} musicians`}>
+                  {members.map((musician) => (
+                    <div key={musician.id} className="category-card-item">
+                      <MusicianCard musician={musician} onRequest={onRequestMusician} showContact />
+                    </div>
+                  ))}
+                </div>
+              </section>
             )
           })}
         </div>
@@ -706,7 +710,7 @@ function App() {
           />
         )}
 
-        {tab === 'Categories' && <CategoriesPage />}
+        {tab === 'Categories' && <CategoriesPage onRequestMusician={requestMusicianByEmail} />}
 
         {tab === 'Community' && (
           <>
