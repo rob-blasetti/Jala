@@ -219,6 +219,37 @@ h1, h2 { margin: 0; }
   font-size: 16px;
 }
 
+/* Global input polish */
+.app-shell input,
+.app-shell select,
+.app-shell textarea {
+  border: 1px solid var(--secondary-border);
+  background: #ffffff;
+  color: var(--text);
+  border-radius: 10px;
+  padding: 0.64rem 0.7rem;
+  transition: border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
+}
+
+.app-shell input::placeholder,
+.app-shell textarea::placeholder {
+  color: #8c9ab1;
+}
+
+.app-shell input:focus,
+.app-shell select:focus,
+.app-shell textarea:focus {
+  outline: none;
+  border-color: #7ea5f0;
+  box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.14);
+  background: #fcfdff;
+}
+
+.app-shell label {
+  color: #2d4368;
+  font-weight: 600;
+}
+
 .form textarea { min-height: 96px; resize: vertical; }
 .form button { background: var(--primary); border-color: var(--primary-strong); color: var(--primary-text); font-weight: 600; }
 
